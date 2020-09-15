@@ -7,6 +7,7 @@
 class MandelbrotPanel : public wxPanel
 {
     wxImage image;
+    wxImage image2;
     wxBitmap resized;
     int w, h;
     

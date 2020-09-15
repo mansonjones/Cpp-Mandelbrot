@@ -1,4 +1,5 @@
 #include "mandelbrot_gui.h"
+#include "mandelbrot.h"
 
 #include <wx/wx.h>
 #include <wx/sizer.h>
@@ -41,10 +42,29 @@ END_EVENT_TABLE()
 MandelbrotPanel::MandelbrotPanel(wxFrame* parent, wxString file, wxBitmapType format) :
 wxPanel(parent)
 {
+    // Write raw data to a wxImage
+    // Eventually convert to wxImage
+    int width = 400; 
+    int height = 400;
+    // unsigned char *buffer = new unsigned char[width*height*3];
+//    unsigned char *buffer = new unsigned char[width*height*3];
+
+//    for (int i = 0; i < width*height*3; i++) {
+//       buffer[i] = 128;
+//    }
+
+   
+    Mandelbrot mandelbrot(width, height);
+    unsigned char *buffer = mandelbrot.getBuffer();
+    image2.Create( width, height, buffer);  
+     
+    
     // load the file... ideally add a check to see if loading was successful
     image.LoadFile(file, format);
-    w = -1;
-    h = -1;
+    // w = -1;
+    // h = -1;
+    w = width;
+    h = height;
 }
 
 /*
@@ -87,7 +107,9 @@ void MandelbrotPanel::render(wxDC&  dc)
     
     if( neww != w || newh != h )
     {
-        resized = wxBitmap( image.Scale( neww, newh /*, wxIMAGE_QUALITY_HIGH*/ ) );
+        // resized = wxBitmap( image.Scale( neww, newh /*, wxIMAGE_QUALITY_HIGH*/ ) );
+        // resized = wxBitmap( image2.Scale( neww, newh /*, wxIMAGE_QUALITY_HIGH*/ ) );
+        resized = wxBitmap( image2.Scale( neww, newh /*, wxIMAGE_QUALITY_HIGH*/ ) );
         w = neww;
         h = newh;
         dc.DrawBitmap( resized, 0, 0, false );

@@ -7,7 +7,23 @@ using namespace std;
 #include "mandelbrot.h"
 
 
-Mandelbrot::Mandelbrot(float width, float height) : _width(width), _height(height) {}
+Mandelbrot::Mandelbrot(float width, float height) : _width(width), _height(height) 
+{
+   _buffer = new unsigned char[_width*_height*3];
+   for (int i = 0; i < _width; i++) {
+      for (int j = 0; j < height; j++) { 
+         int index = 3*(i*_width + j);
+         for (int k = 0; k < 3; k++) {
+           _buffer[index + k] = static_cast<unsigned char>(value(i,j));
+         }
+      }
+   }
+}
+
+unsigned char *Mandelbrot::getBuffer() 
+{
+   return _buffer;
+}
 
 int Mandelbrot::value(int x, int y) {
   complex<float> point((float)x/_width - 1.5, (float)y / _height - 0.5);
