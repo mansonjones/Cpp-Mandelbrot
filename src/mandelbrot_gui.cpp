@@ -1,6 +1,8 @@
 #include "mandelbrot_gui.h"
 #include "mandelbrot.h"
 
+#include "ImageWriter.h"
+
 #include <wx/wx.h>
 #include <wx/sizer.h>
 
@@ -59,7 +61,12 @@ wxPanel(parent)
     mandelbrot.write(fName);
     unsigned char *buffer = mandelbrot.getBuffer();
     image2.Create( width, height, buffer);  
-     
+    
+   FileType fileType = PPM;
+   std::string fileName = "output1.ppm";
+    
+   ImageWriter *imageWriter = ImageWriter::getImageWriter(fileType, fileName, mandelbrot.getImageBuffer());
+   imageWriter->write();
     
     // load the file... ideally add a check to see if loading was successful
     image.LoadFile(file, format);

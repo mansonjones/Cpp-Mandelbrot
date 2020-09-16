@@ -40,6 +40,12 @@ unsigned char *Mandelbrot::getBuffer()
    return _imageBuffer->getBuffer();
 }
 
+
+ImageBuffer<unsigned char> *Mandelbrot::getImageBuffer() 
+{
+   return _imageBuffer;
+}
+
 int Mandelbrot::value(int x, int y) {
   complex<float> point((float)x/_width - 1.5, (float)y / _height - 0.5);
   // we divide by the image dimensions to get values smaller than 1
