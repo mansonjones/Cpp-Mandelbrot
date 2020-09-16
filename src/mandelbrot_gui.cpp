@@ -55,6 +55,8 @@ wxPanel(parent)
 
    
     Mandelbrot mandelbrot(width, height);
+    std::string fName = "temp.ppm";
+    mandelbrot.write(fName);
     unsigned char *buffer = mandelbrot.getBuffer();
     image2.Create( width, height, buffer);  
      

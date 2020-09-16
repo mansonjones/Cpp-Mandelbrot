@@ -8,10 +8,13 @@
 
 #include <string>
 
+#include "ImageBuffer.h"
+
 class Mandelbrot
 {
 public:
    Mandelbrot(float width, float height);
+   ~Mandelbrot();
    void write(std::string fileName);   // this should be improved using the ostream operator
    unsigned char *getBuffer();
 private:
@@ -19,6 +22,8 @@ private:
    float _width;
    float _height;
    unsigned char *_buffer;
+   ImageBuffer<unsigned char> *_imageBuffer;
+   
 };
 
 #endif  /* MANDELBROT_H */

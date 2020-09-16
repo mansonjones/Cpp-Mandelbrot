@@ -18,11 +18,26 @@ Mandelbrot::Mandelbrot(float width, float height) : _width(width), _height(heigh
          }
       }
    }
+   _imageBuffer = new ImageBuffer<unsigned char>(_width, _height);
+   for (int i = 0; i < _width; i++) {
+      for (int j = 0; j < height; j++) {
+          unsigned char foo = static_cast<unsigned char>(value(i,j)); 
+          _imageBuffer->setRed( i, j, foo); 
+          _imageBuffer->setGreen( i, j, foo); 
+          _imageBuffer->setBlue( i, j, foo); 
+      }
+   }
 }
+
+Mandelbrot::~Mandelbrot()
+{
+   delete _imageBuffer;
+} 
 
 unsigned char *Mandelbrot::getBuffer() 
 {
-   return _buffer;
+   // return _buffer;
+   return _imageBuffer->getBuffer();
 }
 
 int Mandelbrot::value(int x, int y) {
@@ -41,13 +56,16 @@ int Mandelbrot::value(int x, int y) {
 
 void Mandelbrot::write(std::string filename) 
 {  
-    ofstream my_Image (filename);
+   ofstream my_Image (filename);
    if (my_Image.is_open()) {
       my_Image << "P3\n" << _width << " " << _height << " 255\n";
       for (int i = 0; i < _width; i++) {
          for (int j = 0; j < _height; j++) {
-            int val = value(i, j);
-            my_Image << val << ' ' << 0 << ' ' << 0 << "\n";
+            // int val = value(i, j);
+            int valRed = static_cast<int>(_imageBuffer->getRed(i,j));
+            int valGreen = static_cast<int>(_imageBuffer->getGreen(i,j));
+            int valBlue = static_cast<int>(_imageBuffer->getBlue(i,j));
+            my_Image << valRed << ' ' << valGreen << ' ' << valBlue << "\n";
          }
       }
    }
