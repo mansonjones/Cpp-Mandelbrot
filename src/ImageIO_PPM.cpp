@@ -31,3 +31,10 @@ void ImageIO_PPM::write()
    }
    else std::cout << " Could not open the file";
 }
+
+ImageBuffer<unsigned char> *ImageIO_PPM::read() 
+{
+   _imageBuffer = new ImageBuffer<unsigned char>(100,100);
+   std::cout << " ImageIO_PPM::read()" << std::endl;
+   return _imageBuffer;
+}
