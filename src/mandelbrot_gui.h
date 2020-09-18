@@ -38,7 +38,7 @@ class MandelbrotApp: public wxApp
 {
     
     wxFrame *frame;
-    MandelbrotPanel * drawPane;
+    MandelbrotPanel * mandelbrotPanel;
 public:
     bool OnInit();
 };

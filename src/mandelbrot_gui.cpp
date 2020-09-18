@@ -146,8 +146,8 @@ bool MandelbrotApp::OnInit()
     frame = new wxFrame(NULL, wxID_ANY, wxT("Hello wxDC"), wxPoint(50,50), wxSize(800,600));
        
     // then simply create like this
-    drawPane = new MandelbrotPanel( frame, wxT("../images/cassini.jpg"), wxBITMAP_TYPE_JPEG);
-    sizer->Add(drawPane, 1, wxEXPAND);
+    mandelbrotPanel = new MandelbrotPanel( frame, wxT("../images/cassini.jpg"), wxBITMAP_TYPE_JPEG);
+    sizer->Add(mandelbrotPanel, 1, wxEXPAND);
         
     frame->SetSizer(sizer);
         

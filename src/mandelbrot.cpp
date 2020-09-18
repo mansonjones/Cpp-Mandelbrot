@@ -9,15 +9,6 @@ using namespace std;
 
 Mandelbrot::Mandelbrot(float width, float height) : _width(width), _height(height) 
 {
-   _buffer = new unsigned char[_width*_height*3];
-   for (int i = 0; i < _width; i++) {
-      for (int j = 0; j < height; j++) { 
-         int index = 3*(i*_width + j);
-         for (int k = 0; k < 3; k++) {
-           _buffer[index + k] = static_cast<unsigned char>(value(i,j));
-         }
-      }
-   }
    _imageBuffer = new ImageBuffer<unsigned char>(_width, _height);
    for (int i = 0; i < _width; i++) {
       for (int j = 0; j < height; j++) {

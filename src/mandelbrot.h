@@ -22,7 +22,6 @@ private:
    int value(int x, int y); 
    float _width;
    float _height;
-   unsigned char *_buffer;
    ImageBuffer<unsigned char> *_imageBuffer;
    
 };
