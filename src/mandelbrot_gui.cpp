@@ -82,8 +82,8 @@ wxPanel(parent)
    FileType fileType = PPM;
    std::string fileName = "output1.ppm";
     
-   ImageWriter *imageWriter = ImageWriter::getImageWriter(fileType, fileName, mandelbrot.getImageBuffer());
-   imageWriter->write();
+   ImageIO *imageIO = ImageIO::getImageWriter(fileType, fileName, mandelbrot.getImageBuffer());
+   imageIO->write();
     
     // load the file... ideally add a check to see if loading was successful
     image.LoadFile(file, format);

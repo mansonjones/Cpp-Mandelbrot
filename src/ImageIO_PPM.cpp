@@ -4,12 +4,12 @@
 #include <iostream>
 #include <fstream>
 
-ImageWriterPPM::ImageWriterPPM(FileType fileType, std::string fileName, ImageBuffer<unsigned char> *imageBuffer)
- : ImageWriter(fileType, fileName, imageBuffer)
+ImageIO_PPM::ImageIO_PPM(FileType fileType, std::string fileName, ImageBuffer<unsigned char> *imageBuffer)
+ : ImageIO(fileType, fileName, imageBuffer)
 {
 }
 
-void ImageWriterPPM::write()
+void ImageIO_PPM::write()
 {
    std::cout << " ImageWriterPPM::write() " << std::endl;
    std::ofstream my_Image (_fileName);

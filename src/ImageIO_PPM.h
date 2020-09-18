@@ -5,10 +5,10 @@
 
 #include <string>
 
-class ImageWriterPPM : public ImageWriter
+class ImageIO_PPM : public ImageIO
 {
 public:
-   ImageWriterPPM(FileType fileType, std::string fileName, ImageBuffer<unsigned char> *imageBuffer);
+   ImageIO_PPM(const FileType fileType, const std::string fileName, ImageBuffer<unsigned char> *imageBuffer);
    virtual void write();
 };
 

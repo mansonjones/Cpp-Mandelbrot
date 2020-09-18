@@ -9,13 +9,13 @@ enum FileType
   PPM
 };
 
-class ImageWriter
+class ImageIO
 {
 public:
-   ImageWriter(const FileType fileType, const std::string fileName, ImageBuffer<unsigned char> *imageBuffer);
+   ImageIO(const FileType fileType, const std::string fileName, ImageBuffer<unsigned char> *imageBuffer);
    // pure virtual function
    virtual void write() = 0;
-   static ImageWriter *getImageWriter(FileType fileType, std::string fileName, ImageBuffer<unsigned char> *imageBuffer);
+   static ImageIO *getImageWriter(FileType fileType, std::string fileName, ImageBuffer<unsigned char> *imageBuffer);
 protected:
    FileType _fileType;
    std::string _fileName;
