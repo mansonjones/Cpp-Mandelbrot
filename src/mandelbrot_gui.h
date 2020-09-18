@@ -4,6 +4,8 @@
 #include <wx/wx.h>
 #include <wx/sizer.h>
 
+class MainFrame;
+
 class MandelbrotPanel : public wxPanel
 {
     wxImage image;
@@ -37,10 +39,15 @@ public:
 class MandelbrotApp: public wxApp
 {
     
-    wxFrame *frame;
+    MainFrame *frame;
     MandelbrotPanel * mandelbrotPanel;
 public:
     bool OnInit();
 };
 
+class MainFrame: public wxFrame
+{
+public:
+    MainFrame(const wxString& title, const wxPoint& position, const wxSize& size);
+};
 #endif // MANDELBROT_GUI_H_

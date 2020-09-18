@@ -6,6 +6,8 @@
 #include <wx/wx.h>
 #include <wx/sizer.h>
 
+#include <iostream>
+
 // wxWidgets APP
 IMPLEMENT_APP(MandelbrotApp)
 
@@ -143,8 +145,8 @@ bool MandelbrotApp::OnInit()
     wxInitAllImageHandlers();
         
     wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
-    frame = new wxFrame(NULL, wxID_ANY, wxT("Hello wxDC"), wxPoint(50,50), wxSize(800,600));
-       
+    // frame = new wxFrame(NULL, wxID_ANY, wxT("Hello wxDC"), wxPoint(50,50), wxSize(800,600));
+    frame = new MainFrame(wxT("Hello wxDC"), wxPoint(50,50), wxSize(800,600));
     // then simply create like this
     mandelbrotPanel = new MandelbrotPanel( frame, wxT("../images/cassini.jpg"), wxBITMAP_TYPE_JPEG);
     sizer->Add(mandelbrotPanel, 1, wxEXPAND);
@@ -155,4 +157,8 @@ bool MandelbrotApp::OnInit()
     return true;
 } 
     
-
+MainFrame::MainFrame(const wxString& title, const wxPoint& position, const wxSize& size)
+: wxFrame((wxFrame *) NULL, wxID_ANY, title, position, size)
+{
+    std::cout << " MainFrame constructor " << std::endl;
+}
