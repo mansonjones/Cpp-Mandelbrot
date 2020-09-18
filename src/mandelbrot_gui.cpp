@@ -1,3 +1,7 @@
+#ifndef WX_PRECOMP
+#       include <wx/wx.h>
+#endif
+
 #include "mandelbrot_gui.h"
 #include "mandelbrot.h"
 
@@ -10,6 +14,16 @@
 
 // wxWidgets APP
 IMPLEMENT_APP(MandelbrotApp)
+
+BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
+        EVT_MENU(MENU_New, MainFrame::NewFile)
+        EVT_MENU(MENU_Open, MainFrame::OpenFile)
+        EVT_MENU(MENU_Close, MainFrame::CloseFile)
+        EVT_MENU(MENU_Save, MainFrame::SaveFile)
+        EVT_MENU(MENU_SaveAs, MainFrame::SaveFileAs)
+        EVT_MENU(MENU_Quit, MainFrame::Quit)
+END_EVENT_TABLE()
+
 
 BEGIN_EVENT_TABLE(MandelbrotPanel, wxPanel)
 // some useful events
@@ -143,22 +157,135 @@ bool MandelbrotApp::OnInit()
 {
     // make sure to call this first
     wxInitAllImageHandlers();
-        
-    wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
+    
+
+    // wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
     // frame = new wxFrame(NULL, wxID_ANY, wxT("Hello wxDC"), wxPoint(50,50), wxSize(800,600));
-    frame = new MainFrame(wxT("Hello wxDC"), wxPoint(50,50), wxSize(800,600));
+    frame = new MainFrame(wxT("Hello wxDC"), wxPoint(50,50), wxSize(500,500));
+    frame->Show(TRUE);
+    SetTopWindow(frame);
+    
     // then simply create like this
-    mandelbrotPanel = new MandelbrotPanel( frame, wxT("../images/cassini.jpg"), wxBITMAP_TYPE_JPEG);
-    sizer->Add(mandelbrotPanel, 1, wxEXPAND);
+    // mandelbrotPanel = new MandelbrotPanel( frame, wxT("../images/cassini.jpg"), wxBITMAP_TYPE_JPEG);
+    // sizer->Add(mandelbrotPanel, 1, wxEXPAND);
         
-    frame->SetSizer(sizer);
+    // frame->SetSizer(sizer);
         
-    frame->Show();
+    // frame->Show();
+    
     return true;
 } 
     
 MainFrame::MainFrame(const wxString& title, const wxPoint& position, const wxSize& size)
 : wxFrame((wxFrame *) NULL, wxID_ANY, title, position, size)
 {
-    std::cout << " MainFrame constructor " << std::endl;
+    std::cout << " MainFrame constructor - A" << std::endl;
+       CreateStatusBar(2);
+
+        MainMenu = new wxMenuBar();
+        wxMenu *FileMenu = new wxMenu();
+
+        FileMenu->Append(MENU_New,
+                "&New", "Create a new file");
+        
+        FileMenu->AppendSeparator();
+        FileMenu->Append(MENU_Open,
+                "&Open", "Open an existing file");
+        FileMenu->Append(MENU_Close,
+                "&Close", "Close the current document");
+
+        FileMenu->AppendSeparator();
+        FileMenu->Append(MENU_Save,
+                "&Save", "Save the current document");
+        FileMenu->Append(MENU_SaveAs,
+                "Save &As", "Save the current document under a new file  name");
+
+        FileMenu->AppendSeparator();
+        FileMenu->Append(MENU_Quit,
+                "&Quit", "Quit the editor");
+
+        MainMenu->Append(FileMenu, "&File");
+        
+        SetMenuBar(MainMenu);
+
+
+
+        mandelbrotPanel = new MandelbrotPanel( this, wxT("../images/cassini.jpg"), wxBITMAP_TYPE_JPEG); 
+
+    // Maximize();  // Maximize the window
+
+}
+
+void MainFrame::NewFile(wxCommandEvent& WXUNUSED(event))
+{
+    // Clear the panel display
+    // MainEditBox->Clear();
+    // reset the path of our current open file
+    CurrentDocPath = wxT("C:/");
+    // Set the Title to reflect the file open
+    SetTitle("Edit - untitled *");
+}
+
+void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
+{
+    
+        wxFileDialog *OpenDialog = new wxFileDialog(
+                this, "Choose a file to open", "" /* wxEmptyString */, "" /* wxEmptyString */,
+                "Text files (*.txt)|*.txt|C++ Source Files (*.cpp, *.cxx)|*.cpp;*.cxx| C Source files (*.c)|*.c|C header files (*.h)|*.h",
+                wxFD_OPEN, wxDefaultPosition);
+
+        // Creates a "open file" dialog with 4 file types
+        if (OpenDialog->ShowModal() == wxID_OK) // if the user click "Open" instead of "cancel"
+        {
+                CurrentDocPath = OpenDialog->GetPath();
+
+                // Sets our current document to the file the user selected
+                // MainEditBox->LoadFile(CurrentDocPath); //Opens that file
+                // Set the Title to reflect the  file open
+                SetTitle(wxString("Edit - ") << OpenDialog->GetFilename());
+        }
+
+}
+
+void MainFrame::CloseFile(wxCommandEvent& WXUNUSED(event))
+{
+        // Clear the Text Box
+        // MainEditBox->Clear();
+        // Reset the current File being edited
+        CurrentDocPath = wxT("C:/");
+        // Set the Title to reflect the file open
+        SetTitle("Edit - untitled *");
+}
+
+void MainFrame::SaveFile(wxCommandEvent& WXUNUSED(event))
+{
+       // Save to the already-set path for the document
+       // TODO: Save the file
+       // MainEditBox->SaveFile(CurrentDocPath);
+}
+
+void MainFrame::SaveFileAs(wxCommandEvent& WXUNUSED(event))
+{
+        wxFileDialog *SaveDialog = new wxFileDialog(
+                this, "Save File As _?", wxEmptyString, wxEmptyString,
+                "Text files (*.txt)|*.txt|C++ Source Files (*.cpp)|*.cpp| C Source files (*.c)|*.c|C header files (*.h)|*.h",
+                wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
+
+        // Creates a Save Dialog with 4 file types
+        if (SaveDialog->ShowModal() == wxID_OK) // If the user clicked "OK"
+        {
+                CurrentDocPath = SaveDialog->GetPath();
+                // set the path of our current document to the file the user chose to save under
+                // MainEditBox->SaveFile(CurrentDocPath); // Save the file to the selected path
+                // Set the Title to reflect the file open
+                SetTitle(wxString("Edit - ") << SaveDialog->GetFilename());
+        }
+
+        // Clean up after ourselves
+        SaveDialog->Destroy();
+}
+
+void MainFrame::Quit(wxCommandEvent& WXUNUSED(event))
+{
+        Close(TRUE); // Close the window
 }
