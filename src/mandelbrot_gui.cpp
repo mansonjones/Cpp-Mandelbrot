@@ -242,6 +242,13 @@ void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
                 // MainEditBox->LoadFile(CurrentDocPath); //Opens that file
                 // Set the Title to reflect the  file open
                 SetTitle(wxString("Edit - ") << OpenDialog->GetFilename());
+                FileType fileType = PPM;
+                std::string fileName = std::string(OpenDialog->GetFilename());
+                ImageBuffer<unsigned char> *tempBuffer;
+                std::cout << " file name " << OpenDialog->GetFilename();
+                ImageIO *imageIO = ImageIO::getImageWriter(fileType, fileName, tempBuffer);
+                imageIO->read();
+                
         }
 
 }

@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 ImageIO_PPM::ImageIO_PPM(FileType fileType, std::string fileName, ImageBuffer<unsigned char> *imageBuffer)
  : ImageIO(fileType, fileName, imageBuffer)
@@ -34,7 +35,42 @@ void ImageIO_PPM::write()
 
 ImageBuffer<unsigned char> *ImageIO_PPM::read() 
 {
-   _imageBuffer = new ImageBuffer<unsigned char>(100,100);
-   std::cout << " ImageIO_PPM::read()" << std::endl;
+   std::ifstream fileStream(_fileName);
+   std::string lineBuffer;
+
+   if (fileStream.is_open())
+   {
+      // read first line
+      std::getline(fileStream, lineBuffer);
+      std::cout << "first line " << lineBuffer << std::endl;
+      if (lineBuffer != "P3") 
+      {
+         std::cout << " error! " << std::endl; 
+      }
+
+      // read second line
+      std::getline(fileStream,lineBuffer);
+      std::istringstream lineStream(lineBuffer);
+      int width, height, bitDepth;
+      lineStream >> width >> height >> bitDepth;
+      _imageBuffer = new ImageBuffer<unsigned char>(width, height);
+      unsigned char red, green, blue;
+      for (int i = 0; i < width; i++) 
+      {
+         for (int j = 0; j < height; j++) {
+            std::getline(fileStream,lineBuffer);
+            // std::istringstream lineStream2(lineBuffer);
+            lineStream = std::istringstream(lineBuffer);
+            lineStream >> red >> green >> blue;
+            _imageBuffer->setRed(i,j,red);
+            _imageBuffer->setGreen(i,j,green);
+            _imageBuffer->setBlue(i,j,blue);
+         }
+      }
+      _imageBuffer = new ImageBuffer<unsigned char>(100,100);
+      std::cout << " ImageIO_PPM::read()" << std::endl;
+      std::cout << "filename #2" << _fileName << std::endl;
+   }
+   // read the file
    return _imageBuffer;
 }
