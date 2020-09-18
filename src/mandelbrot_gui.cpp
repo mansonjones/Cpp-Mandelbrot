@@ -159,19 +159,9 @@ bool MandelbrotApp::OnInit()
     wxInitAllImageHandlers();
     
 
-    // wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
-    // frame = new wxFrame(NULL, wxID_ANY, wxT("Hello wxDC"), wxPoint(50,50), wxSize(800,600));
-    frame = new MainFrame(wxT("Hello wxDC"), wxPoint(50,50), wxSize(500,500));
+    frame = new MainFrame(wxT("Mandelbrot Viewer"), wxPoint(50,50), wxSize(500,500));
     frame->Show(TRUE);
     SetTopWindow(frame);
-    
-    // then simply create like this
-    // mandelbrotPanel = new MandelbrotPanel( frame, wxT("../images/cassini.jpg"), wxBITMAP_TYPE_JPEG);
-    // sizer->Add(mandelbrotPanel, 1, wxEXPAND);
-        
-    // frame->SetSizer(sizer);
-        
-    // frame->Show();
     
     return true;
 } 
