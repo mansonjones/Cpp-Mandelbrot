@@ -1,4 +1,4 @@
-#include "ImageWriterPPM.h"
+#include "ImageIO_PPM.h"
 
 #include <string>
 #include <iostream>

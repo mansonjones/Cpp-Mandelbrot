@@ -1,6 +1,6 @@
 
 #include "ImageIO.h"
-#include "ImageWriterPPM.h"
+#include "ImageIO_PPM.h"
 
 #include <iostream>
 
