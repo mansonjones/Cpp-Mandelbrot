@@ -5,10 +5,11 @@
 #include "mandelbrot_gui.h"
 #include "mandelbrot.h"
 
-#include "ImageWriter.h"
+#include "ImageIO.h"
 
-#include <wx/wx.h>
 #include <wx/sizer.h>
+#include <wx/utils.h>
+#include <wx/wx.h>
 
 #include <iostream>
 
@@ -202,6 +203,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& position, const wxSiz
 
         mandelbrotPanel = new MandelbrotPanel( this, wxT("../images/cassini.jpg"), wxBITMAP_TYPE_JPEG); 
 
+
     // Maximize();  // Maximize the window
 
 }
@@ -211,9 +213,16 @@ void MainFrame::NewFile(wxCommandEvent& WXUNUSED(event))
     // Clear the panel display
     // MainEditBox->Clear();
     // reset the path of our current open file
-    CurrentDocPath = wxT("C:/");
+    wxString command = "echo $HOME";
+    wxArrayString output;
+    wxArrayString errors;
+
+    // wxExecute(command, output, errors);
+    // std::cout << " HOME " << output << std::endl;
+    CurrentDocPath = ::wxGetCwd();
+    std::cout << "CurrentDocPath = " << CurrentDocPath << std::endl;
     // Set the Title to reflect the file open
-    SetTitle("Edit - untitled *");
+    SetTitle(CurrentDocPath);
 }
 
 void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
@@ -221,10 +230,10 @@ void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
     
         wxFileDialog *OpenDialog = new wxFileDialog(
                 this, "Choose a file to open", "" /* wxEmptyString */, "" /* wxEmptyString */,
-                "Text files (*.txt)|*.txt|C++ Source Files (*.cpp, *.cxx)|*.cpp;*.cxx| C Source files (*.c)|*.c|C header files (*.h)|*.h",
+                "image files (*.ppm)|*.ppm",
                 wxFD_OPEN, wxDefaultPosition);
 
-        // Creates a "open file" dialog with 4 file types
+        // Creates a "open file" dialog with 1 file types
         if (OpenDialog->ShowModal() == wxID_OK) // if the user click "Open" instead of "cancel"
         {
                 CurrentDocPath = OpenDialog->GetPath();
@@ -251,6 +260,7 @@ void MainFrame::SaveFile(wxCommandEvent& WXUNUSED(event))
 {
        // Save to the already-set path for the document
        // TODO: Save the file
+       std::cout << " currentDocPath = " << CurrentDocPath << std::endl;
        // MainEditBox->SaveFile(CurrentDocPath);
 }
 
@@ -258,7 +268,7 @@ void MainFrame::SaveFileAs(wxCommandEvent& WXUNUSED(event))
 {
         wxFileDialog *SaveDialog = new wxFileDialog(
                 this, "Save File As _?", wxEmptyString, wxEmptyString,
-                "Text files (*.txt)|*.txt|C++ Source Files (*.cpp)|*.cpp| C Source files (*.c)|*.c|C header files (*.h)|*.h",
+                "Image Files files (*.ppm)|*.ppm",
                 wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
 
         // Creates a Save Dialog with 4 file types

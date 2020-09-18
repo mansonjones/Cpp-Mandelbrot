@@ -1,7 +1,7 @@
 #ifndef IMAGE_WRITER_H
 #define IMAGE_WRITER_H
 
-#include "ImageWriter.h"
+#include "ImageIO.h"
 
 #include <string>
 
