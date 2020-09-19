@@ -229,82 +229,82 @@ void MainFrame::NewFile(wxCommandEvent& WXUNUSED(event))
 void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
 {
     
-        wxFileDialog *OpenDialog = new wxFileDialog(
-                this, "Choose a file to open", "" /* wxEmptyString */, "" /* wxEmptyString */,
-                "image files (*.ppm)|*.ppm",
-                wxFD_OPEN, wxDefaultPosition);
+    wxFileDialog *OpenDialog = new wxFileDialog(
+            this, "Choose a file to open", "" /* wxEmptyString */, "" /* wxEmptyString */,
+            "image files (*.ppm)|*.ppm",
+            wxFD_OPEN, wxDefaultPosition);
 
-        // Creates a "open file" dialog with 1 file types
-        if (OpenDialog->ShowModal() == wxID_OK) // if the user click "Open" instead of "cancel"
-        {
-                _currentDocPath = OpenDialog->GetPath();
+    // Creates a "open file" dialog with 1 file types
+    if (OpenDialog->ShowModal() == wxID_OK) // if the user click "Open" instead of "cancel"
+    {
+        _currentDocPath = OpenDialog->GetPath();
 
-                // Sets our current document to the file the user selected
-                // MainEditBox->LoadFile(CurrentDocPath); //Opens that file
-                // Set the Title to reflect the  file open
-                SetTitle(wxString("Edit - ") << OpenDialog->GetFilename());
-                FileType fileType = PPM;
-                std::string fileName = std::string(OpenDialog->GetFilename());
-                std::cout << " file name " << OpenDialog->GetFilename();
-                // Need to fix the API here
-                ImageBuffer<unsigned char> *tempFoo;
-                ImageIO *imageIO = ImageIO::getImageWriter(fileType, fileName, tempFoo);
-                ImageBuffer<unsigned char> *tempBuffer = imageIO->read();
-                // Render the image buffer to the panel
+        // Sets our current document to the file the user selected
+        // MainEditBox->LoadFile(CurrentDocPath); //Opens that file
+        // Set the Title to reflect the  file open
+        SetTitle(wxString("Edit - ") << OpenDialog->GetFilename());
+            FileType fileType = PPM;
+            std::string fileName = std::string(OpenDialog->GetFilename());
+            std::cout << " file name " << OpenDialog->GetFilename();
+            // Need to fix the API here
+            ImageBuffer<unsigned char> *tempFoo;
+            ImageIO *imageIO = ImageIO::getImageWriter(fileType, fileName, tempFoo);
+            ImageBuffer<unsigned char> *tempBuffer = imageIO->read();
+            // Render the image buffer to the panel
                 
-        }
+    }
 
 }
 
 void MainFrame::CloseFile(wxCommandEvent& WXUNUSED(event))
 {
-        // Clear the Text Box
-        // MainEditBox->Clear();
-        // Reset the current File being edited
-        _currentDocPath = ::wxGetCwd();
-        // Set the Title to reflect the file open
-       std::string fName = "temp_close_file.ppm";
-       getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fName);
+    // Clear the Text Box
+    // MainEditBox->Clear();
+    // Reset the current File being edited
+    _currentDocPath = ::wxGetCwd();
+    // Set the Title to reflect the file open
+    std::string fName = "temp_close_file.ppm";
+    getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fName);
 
-        SetTitle("Edit - untitled *");
+    SetTitle("Edit - untitled *");
 }
 
 void MainFrame::SaveFile(wxCommandEvent& WXUNUSED(event))
 {
-       // Save to the already-set path for the document
-       // TODO: Save the file
-       std::cout << " currentDocPath = " << _currentDocPath << std::endl;
-       std::string fName = "temp3.ppm";
-       getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fName);
+    // Save to the already-set path for the document
+    // TODO: Save the file
+    std::cout << " currentDocPath = " << _currentDocPath << std::endl;
+    std::string fName = "temp3.ppm";
+    getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fName);
  
-       // MainEditBox->SaveFile(CurrentDocPath);
+    // MainEditBox->SaveFile(CurrentDocPath);
 }
 
 void MainFrame::SaveFileAs(wxCommandEvent& WXUNUSED(event))
 {
-        wxFileDialog *SaveDialog = new wxFileDialog(
-                this, "Save File As _?", wxEmptyString, wxEmptyString,
-                "Image Files files (*.ppm)|*.ppm",
-                wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
+    wxFileDialog *SaveDialog = new wxFileDialog(
+        this, "Save File As _?", wxEmptyString, wxEmptyString,
+        "Image Files files (*.ppm)|*.ppm",
+        wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
 
-        // Creates a Save Dialog with 4 file types
-        if (SaveDialog->ShowModal() == wxID_OK) // If the user clicked "OK"
-        {
-                _currentDocPath = SaveDialog->GetPath();
-                // set the path of our current document to the file the user chose to save under
-                // MainEditBox->SaveFile(CurrentDocPath); // Save the file to the selected path
-                // Set the Title to reflect the file open
-                SetTitle(wxString("Edit - ") << SaveDialog->GetFilename());
-                std::string fileName = std::string(SaveDialog->GetFilename());
-                  getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fileName);
+    // Creates a Save Dialog with 4 file types
+    if (SaveDialog->ShowModal() == wxID_OK) // If the user clicked "OK"
+    {
+        _currentDocPath = SaveDialog->GetPath();
+        // set the path of our current document to the file the user chose to save under
+        // MainEditBox->SaveFile(CurrentDocPath); // Save the file to the selected path
+        // Set the Title to reflect the file open
+        SetTitle(wxString("Edit - ") << SaveDialog->GetFilename());
+        std::string fileName = std::string(SaveDialog->GetFilename());
+        getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fileName);
  
-        }
+    }
 
-        // Clean up after ourselves
-        SaveDialog->Destroy();
+    // Clean up after ourselves
+    SaveDialog->Destroy();
 }
 
 void MainFrame::Quit(wxCommandEvent& WXUNUSED(event))
 {
-        Close(TRUE); // Close the window
+    Close(TRUE); // Close the window
 }
