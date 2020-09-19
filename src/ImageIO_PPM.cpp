@@ -42,7 +42,6 @@ ImageBuffer<unsigned char> *ImageIO_PPM::read()
    {
       // read first line
       std::getline(fileStream, lineBuffer);
-      std::cout << "first line " << lineBuffer << std::endl;
       if (lineBuffer != "P3") 
       {
          std::cout << " error! " << std::endl; 

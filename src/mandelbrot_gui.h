@@ -6,10 +6,16 @@
 #include <wx/string.h>
 #include <wx/sizer.h>
 
+
+#include "ImageBuffer.h"
+
 class MainFrame;
+class Mandelbrot;
+
 
 class MandelbrotPanel : public wxPanel
 {
+    Mandelbrot *mandelbrotPointer;
     wxImage image;
     wxImage image2;
     wxBitmap resized;
@@ -22,7 +28,8 @@ public:
     void paintNow();
     void OnSize(wxSizeEvent& event);
     void render(wxDC& dc);
-    
+    void update(ImageBuffer<unsigned char> *imageBuffer);
+    Mandelbrot *getMandelbrotPointer() { return mandelbrotPointer; }
     // some useful events
     /*
      void mouseMoved(wxMouseEvent& event);
@@ -58,6 +65,7 @@ public:
     void SaveFileAs( wxCommandEvent& event );
     void CloseFile( wxCommandEvent& event );
 
+    MandelbrotPanel *getMandelbrotPanel() { return mandelbrotPanel; }
 // The Path to the file we have open
     wxString CurrentDocPath;
 

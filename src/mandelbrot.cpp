@@ -51,8 +51,15 @@ int Mandelbrot::value(int x, int y) {
   else return 0;
 }
 
-void Mandelbrot::write(std::string filename) 
+
+// Eventually this should be update to use the
+// ImageIO library
+void Mandelbrot::write(FileType fileType, std::string fileName) 
 {  
+
+   ImageIO *imageIO = ImageIO::getImageWriter(fileType, fileName, _imageBuffer);
+   imageIO->write();
+   /*
    ofstream my_Image (filename);
    if (my_Image.is_open()) {
       my_Image << "P3\n" << _width << " " << _height << " 255\n";
@@ -67,7 +74,7 @@ void Mandelbrot::write(std::string filename)
       }
    }
    else cout << " Could not open the file";
-
+   */
 
 
 }

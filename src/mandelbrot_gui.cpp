@@ -72,18 +72,24 @@ wxPanel(parent)
 //       buffer[i] = 128;
 //    }
 
-   
-    Mandelbrot mandelbrot(width, height);
-    std::string fName = "temp.ppm";
-    mandelbrot.write(fName);
-    unsigned char *buffer = mandelbrot.getBuffer();
-    image2.Create( width, height, buffer);  
+
+    mandelbrotPointer = new Mandelbrot(width, height);
+    std::string fName = "temp2.ppm";
+    mandelbrotPointer->write(PPM, fName);
+    unsigned char *buffer = mandelbrotPointer->getBuffer();
+    image2.Create( width, height, buffer);
+
+    // Mandelbrot mandelbrot(width, height);
+    // std::string fName = "temp.ppm";
+    // mandelbrot.write(fName);
+    // unsigned char *buffer = mandelbrot.getBuffer();
+    // image2.Create( width, height, buffer);  
     
    FileType fileType = PPM;
-   std::string fileName = "output1.ppm";
+   std::string fileName = "output2.ppm";
     
-   ImageIO *imageIO = ImageIO::getImageWriter(fileType, fileName, mandelbrot.getImageBuffer());
-   imageIO->write();
+   // ImageIO *imageIO = ImageIO::getImageWriter(fileType, fileName, mandelbrotPointer->getImageBuffer());
+   // imageIO->write();
     
     // load the file... ideally add a check to see if loading was successful
     image.LoadFile(file, format);
@@ -154,6 +160,9 @@ void MandelbrotPanel::OnSize(wxSizeEvent& event){
     event.Skip();
 }
 
+void MandelbrotPanel::update(ImageBuffer<unsigned char> *imageBuffer) {
+    std::cout << " MandelbrotPanel::update " << std::endl;
+}
 bool MandelbrotApp::OnInit()
 {
     // make sure to call this first
@@ -244,10 +253,12 @@ void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
                 SetTitle(wxString("Edit - ") << OpenDialog->GetFilename());
                 FileType fileType = PPM;
                 std::string fileName = std::string(OpenDialog->GetFilename());
-                ImageBuffer<unsigned char> *tempBuffer;
                 std::cout << " file name " << OpenDialog->GetFilename();
-                ImageIO *imageIO = ImageIO::getImageWriter(fileType, fileName, tempBuffer);
-                imageIO->read();
+                // Need to fix the API here
+                ImageBuffer<unsigned char> *tempFoo;
+                ImageIO *imageIO = ImageIO::getImageWriter(fileType, fileName, tempFoo);
+                ImageBuffer<unsigned char> *tempBuffer = imageIO->read();
+                // Render the image buffer to the panel
                 
         }
 
@@ -258,7 +269,7 @@ void MainFrame::CloseFile(wxCommandEvent& WXUNUSED(event))
         // Clear the Text Box
         // MainEditBox->Clear();
         // Reset the current File being edited
-        CurrentDocPath = wxT("C:/");
+        CurrentDocPath = ::wxGetCwd();
         // Set the Title to reflect the file open
         SetTitle("Edit - untitled *");
 }
@@ -268,6 +279,9 @@ void MainFrame::SaveFile(wxCommandEvent& WXUNUSED(event))
        // Save to the already-set path for the document
        // TODO: Save the file
        std::cout << " currentDocPath = " << CurrentDocPath << std::endl;
+       std::string fName = "temp3.ppm";
+       getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fName);
+ 
        // MainEditBox->SaveFile(CurrentDocPath);
 }
 
@@ -286,6 +300,9 @@ void MainFrame::SaveFileAs(wxCommandEvent& WXUNUSED(event))
                 // MainEditBox->SaveFile(CurrentDocPath); // Save the file to the selected path
                 // Set the Title to reflect the file open
                 SetTitle(wxString("Edit - ") << SaveDialog->GetFilename());
+                  std::string fName = "temp4.ppm";
+                  getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fName);
+ 
         }
 
         // Clean up after ourselves
