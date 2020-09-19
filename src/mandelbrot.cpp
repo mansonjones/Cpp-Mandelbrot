@@ -56,6 +56,5 @@ int Mandelbrot::value(int x, int y) {
 // ImageIO library
 void Mandelbrot::write(FileType fileType, std::string fileName) 
 {  
-   ImageIO *imageIO = ImageIO::getImageWriter(fileType, fileName, _imageBuffer);
-   imageIO->write();
+   ImageIO::getImageWriter(fileType, fileName, _imageBuffer)->write();
 }
