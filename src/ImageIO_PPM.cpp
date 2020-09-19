@@ -12,7 +12,6 @@ ImageIO_PPM::ImageIO_PPM(FileType fileType, std::string fileName, ImageBuffer<un
 
 void ImageIO_PPM::write()
 {
-   std::cout << " ImageWriterPPM::write() " << std::endl;
    std::ofstream my_Image (_fileName);
 
    int _width = _imageBuffer->getWidth();
@@ -67,8 +66,6 @@ ImageBuffer<unsigned char> *ImageIO_PPM::read()
          }
       }
       _imageBuffer = new ImageBuffer<unsigned char>(100,100);
-      std::cout << " ImageIO_PPM::read()" << std::endl;
-      std::cout << "filename #2" << _fileName << std::endl;
    }
    // read the file
    return _imageBuffer;
