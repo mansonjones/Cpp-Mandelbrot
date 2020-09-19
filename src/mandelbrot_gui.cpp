@@ -222,12 +222,6 @@ void MainFrame::NewFile(wxCommandEvent& WXUNUSED(event))
     // Clear the panel display
     // MainEditBox->Clear();
     // reset the path of our current open file
-    wxString command = "echo $HOME";
-    wxArrayString output;
-    wxArrayString errors;
-
-    // wxExecute(command, output, errors);
-    // std::cout << " HOME " << output << std::endl;
     CurrentDocPath = ::wxGetCwd();
     std::cout << "CurrentDocPath = " << CurrentDocPath << std::endl;
     // Set the Title to reflect the file open
@@ -271,6 +265,9 @@ void MainFrame::CloseFile(wxCommandEvent& WXUNUSED(event))
         // Reset the current File being edited
         CurrentDocPath = ::wxGetCwd();
         // Set the Title to reflect the file open
+       std::string fName = "temp_close_file.ppm";
+       getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fName);
+
         SetTitle("Edit - untitled *");
 }
 
