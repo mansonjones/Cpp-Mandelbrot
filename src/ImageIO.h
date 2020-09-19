@@ -1,5 +1,5 @@
-#ifndef IMAGE_IO_H
-#define IMAGE_IO_H
+#ifndef IMAGE_IO_H_
+#define IMAGE_IO_H_
 
 #include "ImageBuffer.h"
 #include <string>

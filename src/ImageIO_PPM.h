@@ -1,5 +1,5 @@
-#ifndef IMAGE_IO_PPM_H
-#define IMAGE_IO_PPM_H
+#ifndef IMAGE_IO_PPM_H_
+#define IMAGE_IO_PPM_H_
 
 #include "ImageIO.h"
 

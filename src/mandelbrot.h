@@ -1,5 +1,5 @@
-#ifndef MANDELBROT_H
-#define MANDELBROT_H
+#ifndef MANDELBROT_H_
+#define MANDELBROT_H_
 
 
 #include <iostream>
