@@ -56,25 +56,6 @@ int Mandelbrot::value(int x, int y) {
 // ImageIO library
 void Mandelbrot::write(FileType fileType, std::string fileName) 
 {  
-
    ImageIO *imageIO = ImageIO::getImageWriter(fileType, fileName, _imageBuffer);
    imageIO->write();
-   /*
-   ofstream my_Image (filename);
-   if (my_Image.is_open()) {
-      my_Image << "P3\n" << _width << " " << _height << " 255\n";
-      for (int i = 0; i < _width; i++) {
-         for (int j = 0; j < _height; j++) {
-            // int val = value(i, j);
-            int valRed = static_cast<int>(_imageBuffer->getRed(i,j));
-            int valGreen = static_cast<int>(_imageBuffer->getGreen(i,j));
-            int valBlue = static_cast<int>(_imageBuffer->getBlue(i,j));
-            my_Image << valRed << ' ' << valGreen << ' ' << valBlue << "\n";
-         }
-      }
-   }
-   else cout << " Could not open the file";
-   */
-
-
 }
