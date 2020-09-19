@@ -300,8 +300,8 @@ void MainFrame::SaveFileAs(wxCommandEvent& WXUNUSED(event))
                 // MainEditBox->SaveFile(CurrentDocPath); // Save the file to the selected path
                 // Set the Title to reflect the file open
                 SetTitle(wxString("Edit - ") << SaveDialog->GetFilename());
-                  std::string fName = "temp4.ppm";
-                  getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fName);
+                std::string fileName = std::string(SaveDialog->GetFilename());
+                  getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fileName);
  
         }
 
