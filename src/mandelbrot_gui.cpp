@@ -182,7 +182,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& position, const wxSiz
     std::cout << " MainFrame constructor - A" << std::endl;
        CreateStatusBar(2);
 
-        MainMenu = new wxMenuBar();
+        _mainMenu = new wxMenuBar();
         wxMenu *FileMenu = new wxMenu();
 
         FileMenu->Append(MENU_New,
@@ -204,13 +204,13 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& position, const wxSiz
         FileMenu->Append(MENU_Quit,
                 "&Quit", "Quit the editor");
 
-        MainMenu->Append(FileMenu, "&File");
+        _mainMenu->Append(FileMenu, "&File");
         
-        SetMenuBar(MainMenu);
+        SetMenuBar(_mainMenu);
 
 
 
-        mandelbrotPanel = new MandelbrotPanel( this, wxT("../images/cassini.jpg"), wxBITMAP_TYPE_JPEG); 
+        _mandelbrotPanel = new MandelbrotPanel( this, wxT("../images/cassini.jpg"), wxBITMAP_TYPE_JPEG); 
 
 
     // Maximize();  // Maximize the window

@@ -65,14 +65,14 @@ public:
     void SaveFileAs( wxCommandEvent& event );
     void CloseFile( wxCommandEvent& event );
 
-    MandelbrotPanel *getMandelbrotPanel() { return mandelbrotPanel; }
+    MandelbrotPanel *getMandelbrotPanel() { return _mandelbrotPanel; }
 // The Path to the file we have open
     wxString CurrentDocPath;
 
     DECLARE_EVENT_TABLE()
 private:
-    wxMenuBar *MainMenu;
-    MandelbrotPanel * mandelbrotPanel;
+    wxMenuBar *_mainMenu;
+    MandelbrotPanel *_mandelbrotPanel;
 };
 
 enum
