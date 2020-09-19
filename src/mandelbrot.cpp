@@ -22,7 +22,7 @@ Mandelbrot::Mandelbrot(float width, float height) : _width(width), _height(heigh
 
 Mandelbrot::~Mandelbrot()
 {
-   //delete _imageBuffer;
+   delete _imageBuffer;
 } 
 
 unsigned char *Mandelbrot::getBuffer() 
