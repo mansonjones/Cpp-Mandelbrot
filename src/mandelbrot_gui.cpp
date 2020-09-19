@@ -73,10 +73,10 @@ wxPanel(parent)
 //    }
 
 
-    mandelbrotPointer = new Mandelbrot(width, height);
+    _mandelbrotPointer = new Mandelbrot(width, height);
     std::string fName = "temp2.ppm";
-    mandelbrotPointer->write(PPM, fName);
-    unsigned char *buffer = mandelbrotPointer->getBuffer();
+    _mandelbrotPointer->write(PPM, fName);
+    unsigned char *buffer = _mandelbrotPointer->getBuffer();
     image2.Create( width, height, buffer);
 
     // Mandelbrot mandelbrot(width, height);
@@ -179,7 +179,6 @@ bool MandelbrotApp::OnInit()
 MainFrame::MainFrame(const wxString& title, const wxPoint& position, const wxSize& size)
 : wxFrame((wxFrame *) NULL, wxID_ANY, title, position, size)
 {
-    std::cout << " MainFrame constructor - A" << std::endl;
        CreateStatusBar(2);
 
         _mainMenu = new wxMenuBar();
@@ -223,7 +222,6 @@ void MainFrame::NewFile(wxCommandEvent& WXUNUSED(event))
     // MainEditBox->Clear();
     // reset the path of our current open file
     _currentDocPath = ::wxGetCwd();
-    std::cout << "CurrentDocPath = " << _currentDocPath << std::endl;
     // Set the Title to reflect the file open
     SetTitle(_currentDocPath);
 }

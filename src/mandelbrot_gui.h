@@ -15,7 +15,7 @@ class Mandelbrot;
 
 class MandelbrotPanel : public wxPanel
 {
-    Mandelbrot *mandelbrotPointer;
+    Mandelbrot *_mandelbrotPointer;
     wxImage image;
     wxImage image2;
     wxBitmap resized;
@@ -29,7 +29,7 @@ public:
     void OnSize(wxSizeEvent& event);
     void render(wxDC& dc);
     void update(ImageBuffer<unsigned char> *imageBuffer);
-    Mandelbrot *getMandelbrotPointer() { return mandelbrotPointer; }
+    Mandelbrot *getMandelbrotPointer() { return _mandelbrotPointer; }
     // some useful events
     /*
      void mouseMoved(wxMouseEvent& event);
