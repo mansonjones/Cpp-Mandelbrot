@@ -222,10 +222,10 @@ void MainFrame::NewFile(wxCommandEvent& WXUNUSED(event))
     // Clear the panel display
     // MainEditBox->Clear();
     // reset the path of our current open file
-    CurrentDocPath = ::wxGetCwd();
-    std::cout << "CurrentDocPath = " << CurrentDocPath << std::endl;
+    _currentDocPath = ::wxGetCwd();
+    std::cout << "CurrentDocPath = " << _currentDocPath << std::endl;
     // Set the Title to reflect the file open
-    SetTitle(CurrentDocPath);
+    SetTitle(_currentDocPath);
 }
 
 void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
@@ -239,7 +239,7 @@ void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
         // Creates a "open file" dialog with 1 file types
         if (OpenDialog->ShowModal() == wxID_OK) // if the user click "Open" instead of "cancel"
         {
-                CurrentDocPath = OpenDialog->GetPath();
+                _currentDocPath = OpenDialog->GetPath();
 
                 // Sets our current document to the file the user selected
                 // MainEditBox->LoadFile(CurrentDocPath); //Opens that file
@@ -263,7 +263,7 @@ void MainFrame::CloseFile(wxCommandEvent& WXUNUSED(event))
         // Clear the Text Box
         // MainEditBox->Clear();
         // Reset the current File being edited
-        CurrentDocPath = ::wxGetCwd();
+        _currentDocPath = ::wxGetCwd();
         // Set the Title to reflect the file open
        std::string fName = "temp_close_file.ppm";
        getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fName);
@@ -275,7 +275,7 @@ void MainFrame::SaveFile(wxCommandEvent& WXUNUSED(event))
 {
        // Save to the already-set path for the document
        // TODO: Save the file
-       std::cout << " currentDocPath = " << CurrentDocPath << std::endl;
+       std::cout << " currentDocPath = " << _currentDocPath << std::endl;
        std::string fName = "temp3.ppm";
        getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fName);
  
@@ -292,7 +292,7 @@ void MainFrame::SaveFileAs(wxCommandEvent& WXUNUSED(event))
         // Creates a Save Dialog with 4 file types
         if (SaveDialog->ShowModal() == wxID_OK) // If the user clicked "OK"
         {
-                CurrentDocPath = SaveDialog->GetPath();
+                _currentDocPath = SaveDialog->GetPath();
                 // set the path of our current document to the file the user chose to save under
                 // MainEditBox->SaveFile(CurrentDocPath); // Save the file to the selected path
                 // Set the Title to reflect the file open

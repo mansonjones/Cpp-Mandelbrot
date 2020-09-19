@@ -67,7 +67,7 @@ public:
 
     MandelbrotPanel *getMandelbrotPanel() { return _mandelbrotPanel; }
 // The Path to the file we have open
-    wxString CurrentDocPath;
+    wxString _currentDocPath;
 
     DECLARE_EVENT_TABLE()
 private:
