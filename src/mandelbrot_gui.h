@@ -48,7 +48,7 @@ public:
 class MandelbrotApp: public wxApp
 {
 private:
-    MainFrame *frame;
+    MainFrame *_frame;
 public:
     bool OnInit();
 };
@@ -74,6 +74,7 @@ private:
     wxMenuBar *MainMenu;
     MandelbrotPanel * mandelbrotPanel;
 };
+
 enum
 {
         // declares an id which will be used to call our button

@@ -169,9 +169,9 @@ bool MandelbrotApp::OnInit()
     wxInitAllImageHandlers();
     
 
-    frame = new MainFrame(wxT("Mandelbrot Viewer"), wxPoint(50,50), wxSize(500,500));
-    frame->Show(TRUE);
-    SetTopWindow(frame);
+    _frame = new MainFrame(wxT("Mandelbrot Viewer"), wxPoint(50,50), wxSize(500,500));
+    _frame->Show(TRUE);
+    SetTopWindow(_frame);
     
     return true;
 } 
