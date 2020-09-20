@@ -11,7 +11,21 @@ template <typename T>
 class ImageBuffer 
 {
 public:
+   // Note that rule of five is applied.
    ImageBuffer(int width = 400, int height = 400);
+
+   // Copy Constructor
+   ImageBuffer(const ImageBuffer &source);
+   
+   // Copy Assignment Operator
+   ImageBuffer &operator = (const ImageBuffer& source);
+
+   // Move Constructor
+   ImageBuffer(ImageBuffer &&source);
+
+   // Move Assignment Operator
+   ImageBuffer &operator = (ImageBuffer &&source);
+   // 
    ~ImageBuffer();
 
    T getRed(int i, int j);
@@ -47,6 +61,33 @@ ImageBuffer<T>::ImageBuffer(int width, int height) : _width(width), _height(heig
    for (int i = 0; i < _width*_height*3; i++) {
       _bufferPtr[i] = i;
    }
+}
+
+// Copy Constructor
+template <typename T>
+ImageBuffer<T>::ImageBuffer(const ImageBuffer &source)
+{
+
+}
+
+// Copy Assignment Operator
+template <typename T>
+ImageBuffer<T> &ImageBuffer<T>::operator = (const ImageBuffer<T> &source)
+{
+
+}
+
+// Move Constructor
+template <typename T>
+ImageBuffer<T>::ImageBuffer(ImageBuffer &&source)
+{
+
+}
+// Move Assignment Operator
+template <typename T>
+ImageBuffer<T> &ImageBuffer<T>::operator = (ImageBuffer &&source)
+{
+
 }
 
 template <typename T>

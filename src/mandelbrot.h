@@ -27,5 +27,5 @@ private:
    
 };
 
-#endif  /* MANDELBROT_H */
+#endif  /* MANDELBROT_H_*/
   
