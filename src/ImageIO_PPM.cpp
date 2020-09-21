@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <future>
 
 ImageIO_PPM::ImageIO_PPM(FileType fileType, std::string fileName, ImageBuffer<unsigned char> *imageBuffer)
  : ImageIO(fileType, fileName, imageBuffer)
@@ -70,3 +71,17 @@ ImageBuffer<unsigned char> *ImageIO_PPM::read()
    // read the file
    return _imageBuffer;
 }
+
+ void ImageIO_PPM::writeImage(std::promise<std::string> && promise, std::string fileName, ImageBuffer<unsigned char> imageBuffer)
+ {
+    std::ofstream outputFileStream(fileName);
+
+    if (outputFileStream.is_open()) {
+       outputFileStream << "Hello!" << std::endl;
+    }
+         // Use this to help with debugging.
+    // std::this_thread::sleep_for(std::chrono::milliseconds(4000)); // simulate work
+    std::string returnMessage = "file written successfully";
+    promise.set_value(returnMessage);
+}
+

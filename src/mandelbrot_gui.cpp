@@ -6,12 +6,16 @@
 #include "mandelbrot.h"
 
 #include "ImageIO.h"
+#include "ImageBuffer.h"
+#include "ImageIO_PPM.h"
 
 #include <wx/sizer.h>
 #include <wx/utils.h>
 #include <wx/wx.h>
 
 #include <iostream>
+#include <string>
+#include <future>
 
 // wxWidgets APP
 IMPLEMENT_APP(MandelbrotApp)
@@ -81,7 +85,12 @@ wxPanel(parent)
     // _mandelbrotPointer->moveImageBufferHere(std::move(imageBuffer2));
     // _mandelbrotPointer->compute();
     std::cout << "debug 3" << std::endl;
-    // ImageBuffer<unsigned char> testBuffer = _mandelbrotPointer->getImageBuffer2();
+    ImageBuffer<unsigned char> testBuffer = _mandelbrotPointer->getImageBuffer2();
+
+    std::cout << " Debug Mandelbrot " << std::endl;
+    std::cout << " width " << testBuffer.getWidth() << std::endl;
+    std::cout << " height " << testBuffer.getHeight() << std::endl;
+
     std::string fName = "temp2.ppm";
     _mandelbrotPointer->write(PPM, fName);
     unsigned char *buffer = _mandelbrotPointer->getBuffer();
@@ -304,8 +313,21 @@ void MainFrame::SaveFileAs(wxCommandEvent& WXUNUSED(event))
         // Set the Title to reflect the file open
         SetTitle(wxString("Edit - ") << SaveDialog->GetFilename());
         std::string fileName = std::string(SaveDialog->GetFilename());
+
         getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fileName);
- 
+        // Perform the file write asynchronously.
+        // I want to post a message in the title bar when the file write is done
+        // std::promise<std::string> promise;
+        // std::future<std::string> future = promise.get_future();
+
+        // start the thread and pass promise as an argument
+        // std::string tempFileName("tempFilename.ppm");
+        // ImageBuffer<unsigned char> tempImageBuffer( 300, 300);
+        // std::thread t(ImageIO_PPM::writeImage, std::move(promise), tempFileName, tempImageBuffer);
+
+        // retrieve return message via future and print to console
+        // std::string returnMessage = future.get();
+        // std::cout << "Return message from thread is: " << returnMessage << std::endl;
     }
 
     // Clean up after ourselves

@@ -68,11 +68,11 @@ ImageBuffer<T>::ImageBuffer(int width, int height) : _width(width), _height(heig
 // Copy Constructor
 template <typename T>
 ImageBuffer<T>::ImageBuffer(const ImageBuffer &source) :
-   _width(source.width), _height(source.height)
+   _width(source._width), _height(source._height)
 {
    _bufferPtr = new T[_width*_height*3];  // Assume 3 channels : r, g, b
    for (int i = 0; i < _width*_height*3; i++) {
-      _bufferPtr[i] = source->bufferPtr[i];
+      _bufferPtr[i] = source._bufferPtr[i];
    }
 }
 
