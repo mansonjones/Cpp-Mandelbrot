@@ -65,6 +65,10 @@ wxPanel(parent)
     // Eventually convert to wxImage
     int width = 400; 
     int height = 400;
+
+    // Note that the ImageBuffer is managed using move semantics
+    // ImageBuffer<unsigned char> imageBuffer2(width, height);
+
     // unsigned char *buffer = new unsigned char[width*height*3];
 //    unsigned char *buffer = new unsigned char[width*height*3];
 
@@ -74,6 +78,10 @@ wxPanel(parent)
 
 
     _mandelbrotPointer = new Mandelbrot(width, height);
+    // _mandelbrotPointer->moveImageBufferHere(std::move(imageBuffer2));
+    // _mandelbrotPointer->compute();
+    std::cout << "debug 3" << std::endl;
+    // ImageBuffer<unsigned char> testBuffer = _mandelbrotPointer->getImageBuffer2();
     std::string fName = "temp2.ppm";
     _mandelbrotPointer->write(PPM, fName);
     unsigned char *buffer = _mandelbrotPointer->getBuffer();

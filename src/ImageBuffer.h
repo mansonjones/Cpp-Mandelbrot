@@ -1,6 +1,8 @@
 #ifndef IMAGE_BUFFER_H_
 #define IMAGE_BUFFER_H_
 
+#include <iostream>
+
 // Question: Is there some interesting way to use a functor
 // for this class?
 // Reminder: Be sure to add const to the getters
@@ -78,6 +80,7 @@ ImageBuffer<T>::ImageBuffer(const ImageBuffer &source) :
 template <typename T>
 ImageBuffer<T> &ImageBuffer<T>::operator = (const ImageBuffer<T> &source)
 {
+   std::cout << "Copy Assignment Operator" << std::endl;
    _width = source._width;
    _height = source._height;
 
@@ -93,6 +96,7 @@ ImageBuffer<T> &ImageBuffer<T>::operator = (const ImageBuffer<T> &source)
 template <typename T>
 ImageBuffer<T>::ImageBuffer(ImageBuffer &&source)
 {
+   std::cout << "Move Constructor " << std::endl;
    _width = source._width;
    _height = source._height;
    _bufferPtr = source._bufferPtr;
@@ -101,6 +105,7 @@ ImageBuffer<T>::ImageBuffer(ImageBuffer &&source)
 template <typename T>
 ImageBuffer<T> &ImageBuffer<T>::operator = (ImageBuffer &&source)
 {
+   std::cout << "Move Assignement Operator" << std::endl;
    _width = source._width;
    _height = source._height;
    _bufferPtr = source._bufferPtr;

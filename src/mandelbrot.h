@@ -22,6 +22,7 @@ public:
    // Move Semantics
    ImageBuffer<unsigned char> getImageBuffer2();
    void moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer);
+   void compute();
 private:
    int value(int x, int y); 
    float _width;
