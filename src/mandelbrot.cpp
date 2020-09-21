@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <complex>
+#include <memory>
 
 using namespace std;
 
@@ -31,6 +32,19 @@ unsigned char *Mandelbrot::getBuffer()
    return _imageBuffer->getBuffer();
 }
 
+ImageBuffer<unsigned char> Mandelbrot::getImageBuffer2() 
+{
+   ImageBuffer<unsigned char> imageBuffer = std::move(_imageBuffer2);
+   return imageBuffer;
+}
+
+
+// Question: Should this have &&imageBuffer?
+void Mandelbrot::moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer)
+{
+   
+   _imageBuffer2 = std::move(imageBuffer);
+}
 
 ImageBuffer<unsigned char> *Mandelbrot::getImageBuffer() 
 {

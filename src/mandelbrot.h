@@ -19,11 +19,15 @@ public:
    void write(FileType fileType, std::string fileName);   // this should be improved using the ostream operator
    unsigned char *getBuffer();
    ImageBuffer<unsigned char> *getImageBuffer();
+   // Move Semantics
+   ImageBuffer<unsigned char> getImageBuffer2();
+   void moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer);
 private:
    int value(int x, int y); 
    float _width;
    float _height;
    ImageBuffer<unsigned char> *_imageBuffer;
+   ImageBuffer<unsigned char> _imageBuffer2;
    
 };
 

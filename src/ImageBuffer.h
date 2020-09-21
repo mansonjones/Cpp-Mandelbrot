@@ -104,9 +104,11 @@ ImageBuffer<T> &ImageBuffer<T>::operator = (ImageBuffer &&source)
    _width = source._width;
    _height = source._height;
    _bufferPtr = source._bufferPtr;
+
+   return *this;
 }
 
-// Desctructor
+// Destructor
 template <typename T>
 ImageBuffer<T>::~ImageBuffer()
 {
