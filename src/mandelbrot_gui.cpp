@@ -5,6 +5,7 @@
 #include "mandelbrot_gui.h"
 #include "mandelbrot.h"
 
+#include "AutoSave.h"
 #include "ImageIO.h"
 #include "ImageBuffer.h"
 #include "ImageIO_PPM.h"
@@ -189,6 +190,11 @@ bool MandelbrotApp::OnInit()
     _frame = new MainFrame(wxT("Mandelbrot Viewer"), wxPoint(50,50), wxSize(500,500));
     _frame->Show(TRUE);
     SetTopWindow(_frame);
+
+    // Start the AutoSaver
+    // AutoSave autoSave;
+    // autoSave.runScheduler();
+    // autoSave.waitForAutoSave();
     
     return true;
 } 
