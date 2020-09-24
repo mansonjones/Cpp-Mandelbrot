@@ -39,7 +39,7 @@ public:
         _messages.push_back(std::move(msg));
         _cond.notify_one(); // notify client after pushing new Vehicle into vector
     }
-
+    int size() { return _messages.size(); }
 private:
     std::mutex _mutex;
     std::condition_variable _cond;

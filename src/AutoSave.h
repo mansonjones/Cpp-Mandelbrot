@@ -56,8 +56,8 @@ private:
 class ImageWriter
 {
 public:
-
-   static void write(std::promise<void> &&promise);
+   static void write1();
+   static void write(std::promise<void> &&promise, std::string fileName);
 };
 
 class AutoSave
