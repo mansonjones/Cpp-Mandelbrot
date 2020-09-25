@@ -71,6 +71,9 @@ wxPanel(parent)
     int width = 400; 
     int height = 400;
 
+    // AutoSave *autoSave = new AutoSave();
+    // autoSave->runScheduler();
+    // autoSave->waitForAutoSave();
     // Note that the ImageBuffer is managed using move semantics
     // ImageBuffer<unsigned char> imageBuffer2(width, height);
 
@@ -192,9 +195,11 @@ bool MandelbrotApp::OnInit()
     SetTopWindow(_frame);
 
     // Start the AutoSaver
-    // AutoSave autoSave;
-    // autoSave.runScheduler();
-    // autoSave.waitForAutoSave();
+    AutoSave *autoSave = new AutoSave();
+    autoSave->runTimerOnThread();
+    autoSave->runMonitorOnThread();
+    // auto future1 = std::async(&AutoSave::waitForAutoSave, this);
+    // autoSave->waitForAutoSave();
     
     return true;
 } 

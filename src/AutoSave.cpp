@@ -1,9 +1,10 @@
 #include "AutoSave.h"
 #include <chrono>
 
+std::mutex AutoSave::_mutex;
+
 void ImageWriter::write(std::promise<void> &&promise, std::string fileName)
 {
-   std::cout << " ImageWriter::write " << std::endl;
    std::string fileNameTemp = "output1.txt";
    std::ofstream outputFileStream(fileNameTemp);
    if (outputFileStream.is_open()) {
@@ -14,7 +15,6 @@ void ImageWriter::write(std::promise<void> &&promise, std::string fileName)
 
 void ImageWriter::write1()
 {
-   std::cout << " ImageWriter::write " << std::endl;
    std::string fileName = "output1.txt";
    std::ofstream outputFileStream(fileName);
    if (outputFileStream.is_open()) {
@@ -24,61 +24,82 @@ void ImageWriter::write1()
 }
 AutoSave::AutoSave()
 {
-  std::cout << " AutoSave Constructor " << std::endl;
+  // std::cout << " AutoSave Constructor " << std::endl;
   _messageQueue = std::make_shared<MessageQueue<bool>>();
 }
 
 AutoSave::~AutoSave()
 {
   // set up thread barrier before this object is destroyed
-  std::for_each(threads.begin(), threads.end(), [](std::thread &t) {
+  std::for_each(_threads.begin(), _threads.end(), [](std::thread &t) {
      t.join();
   });
 }
 
-void AutoSave::runScheduler()
+void AutoSave::runTimerOnThread()
 {
-   threads.emplace_back(std::thread(&AutoSave::schedule, this));
+   _threads.emplace_back(std::thread(&AutoSave::sendMessageAtInterval, this));
 }
 
-void AutoSave::waitForAutoSave()
+void AutoSave::runMonitorOnThread()
+{
+    _threads.emplace_back(std::thread(&AutoSave::waitForAutoSaveMessage, this));
+}
+
+void AutoSave::waitForAutoSaveMessage()
 {
    while (true)
    {
-       // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-      bool saveFile = _messageQueue->receive();
-      if (saveFile == true) {
-          // return;
-         std::cout << " wait for Save " << std::endl;
-         // ImageWriter::write1();
-         std::promise<void> promise;
-         std::future<void> future = promise.get_future();
-
-         // future.wait();
-
-        std::string fileName2 = "output2.txt";
-        std::thread t(ImageWriter::write, std::move(promise), fileName2);
-        future.get();
-        // thread barrier
-        t.join();
-         // ImageWriter::write();
-         //
-         // Use promise - future to save file
-      }
-   }
+       std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+       bool autoSave = _messageQueue->receive();
+       
+       if (autoSave == true) {
+           std::unique_lock<std::mutex> lock(_mutex);
+           std::cout << " Save Message Received " << std::endl;
+           lock.unlock();
+           // This job needs to be launched asychronouly
+           std::async(&AutoSave::launchSaveJobOnThread, this);
+          // launchSaveJobOnThread();
+        }
+    }
 }
 
-void AutoSave::schedule()
+
+void AutoSave::launchSaveJobOnThread()
+{
+    // create promise and future
+    std::promise<std::string> promise;
+    std::future<std::string> future = promise.get_future();
+    
+    std::string fileName = "autosave.ppm";
+    // start thread and pass promise as an argument
+    _threads.emplace_back(std::thread(&AutoSave::saveFile, this, std::move(promise), fileName));
+    std::string returnMessage = future.get();
+}
+
+void AutoSave::saveFile(std::promise<std::string> && promise, std::string fileName)
+{
+    std::ofstream outputFileStream(fileName);
+    if (outputFileStream.is_open()) 
+    {
+        outputFileStream << " Hello There!" << std::endl;
+    }
+    promise.set_value("RETURN MESSAGE");
+}
+
+void AutoSave::sendMessageAtInterval()
 {
    unsigned int interval = 5000; // milliseconds
 
    while (true)
    {
        std::this_thread::sleep_for(std::chrono::milliseconds(interval));
+       // std::unique_lock<std::mutex> lock(_mutex);
         std::cout << " Auto Save ... " << std::endl;
+        // lock.unlock();
         bool autoSave = true;
         _messageQueue->send(std::move(autoSave));
-        std::cout << " Message Queue Size " << _messageQueue->size() << std::endl;
+        // std::cout << " Message Queue Size " << _messageQueue->size() << std::endl;
          // I could write the output here
          // Question: should mutex be used for console messages?
    }

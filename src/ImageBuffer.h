@@ -86,7 +86,7 @@ ImageBuffer<T> &ImageBuffer<T>::operator = (const ImageBuffer<T> &source)
 
    _bufferPtr = new T[_width*_height*3];  // Assume 3 channels : r, g, b
    for (int i = 0; i < _width*_height*3; i++) {
-      _bufferPtr[i] = source->bufferPtr[i];
+      _bufferPtr[i] = source._bufferPtr[i];
    }
 
    return *this;
