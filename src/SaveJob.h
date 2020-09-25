@@ -7,9 +7,12 @@
 
 class SaveJob 
 {
+public:
     SaveJob();
     void setImageBuffer(ImageBuffer<unsigned char> imageBuffer);
     void setFileName(std::string fileName);
+
+    std::string getFileName();
 
 private:
     // Todo: Add image 

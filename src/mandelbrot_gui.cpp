@@ -198,8 +198,6 @@ bool MandelbrotApp::OnInit()
     AutoSave *autoSave = new AutoSave();
     autoSave->runTimerOnThread();
     autoSave->runMonitorOnThread();
-    // auto future1 = std::async(&AutoSave::waitForAutoSave, this);
-    // autoSave->waitForAutoSave();
     
     return true;
 } 

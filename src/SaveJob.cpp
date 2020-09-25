@@ -14,3 +14,8 @@ void SaveJob::setFileName(std::string fileName)
 {
     _fileName = fileName;
 }
+
+std::string SaveJob::getFileName()
+{
+    return _fileName;
+}
