@@ -58,23 +58,23 @@ void AutoSave::waitForAutoSaveMessage()
        
        if (autoSave == true) {
            std::unique_lock<std::mutex> lock(_mutex);
-           std::cout << " Save Message Received " << " " << _counter << std::endl;
            _counter++;
+           std::string fileName = std::string("autofile_" + std::to_string(_counter) + std::string(".pmm"));
+           std::cout << " Save Message Received " << " " << _counter << " " << fileName << std::endl;
            lock.unlock();
            // This job needs to be launched asychronouly
-           std::async(&AutoSave::launchSaveJobOnThread, this);
+           // std::async(&AutoSave::launchSaveJobOnThread, this, fileName);
           // launchSaveJobOnThread();
         }
     }
 }
 
-void AutoSave::launchSaveJobOnThread()
+void AutoSave::launchSaveJobOnThread(std::string fileName)
 {
     // create promise and future
     std::promise<std::string> promise;
     std::future<std::string> future = promise.get_future();
     
-    std::string fileName = "autosave_01.ppm";
     // start thread and pass promise as an argument
     SaveJob saveJob;
     saveJob.setFileName(fileName);

@@ -32,7 +32,7 @@ public:
    void runTimerOnThread();
    void runMonitorOnThread();
    void waitForAutoSaveMessage();
-   void launchSaveJobOnThread();
+   void launchSaveJobOnThread(std::string fileName);
    void saveFile(std::promise<std::string> && promise, SaveJob saveJob);
 private:
    void sendMessageAtInterval();
