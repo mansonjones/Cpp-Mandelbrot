@@ -117,7 +117,7 @@ ImageBuffer<T> &ImageBuffer<T>::operator = (ImageBuffer &&source)
 template <typename T>
 ImageBuffer<T>::~ImageBuffer()
 {
-  delete _bufferPtr;
+  // delete _bufferPtr;
 }
 
 template <typename T>

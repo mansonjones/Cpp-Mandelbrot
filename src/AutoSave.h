@@ -14,6 +14,7 @@
 
 #include "MessageQueue.h"
 #include "WaitingSaveJobs.h"
+#include "SaveJob.h"
 
 class ImageWriter
 {
@@ -32,7 +33,7 @@ public:
    void runMonitorOnThread();
    void waitForAutoSaveMessage();
    void launchSaveJobOnThread();
-   void saveFile(std::promise<std::string> && promise, std::string fileName);
+   void saveFile(std::promise<std::string> && promise, SaveJob saveJob);
 private:
    void sendMessageAtInterval();
 // Add a MessageQueue of AutoSaveJobs here
@@ -40,7 +41,8 @@ private:
    std::shared_ptr<MessageQueue<bool>> _messageQueue;
    WaitingSaveJobs _waitingSaveJobs;
    static std::mutex _mutex;
-   
+   SaveJob _saveJob;
+   static unsigned long _counter;
 //
 };
 

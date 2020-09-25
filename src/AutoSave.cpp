@@ -1,7 +1,10 @@
 #include "AutoSave.h"
+#include "ImageIO_PPM.h"
+
 #include <chrono>
 
 std::mutex AutoSave::_mutex;
+unsigned long AutoSave::_counter = 0;
 
 void ImageWriter::write(std::promise<void> &&promise, std::string fileName)
 {
@@ -55,7 +58,8 @@ void AutoSave::waitForAutoSaveMessage()
        
        if (autoSave == true) {
            std::unique_lock<std::mutex> lock(_mutex);
-           std::cout << " Save Message Received " << std::endl;
+           std::cout << " Save Message Received " << " " << _counter << std::endl;
+           _counter++;
            lock.unlock();
            // This job needs to be launched asychronouly
            std::async(&AutoSave::launchSaveJobOnThread, this);
@@ -64,27 +68,55 @@ void AutoSave::waitForAutoSaveMessage()
     }
 }
 
-
 void AutoSave::launchSaveJobOnThread()
 {
     // create promise and future
     std::promise<std::string> promise;
     std::future<std::string> future = promise.get_future();
     
-    std::string fileName = "autosave.ppm";
+    std::string fileName = "autosave_01.ppm";
     // start thread and pass promise as an argument
-    _threads.emplace_back(std::thread(&AutoSave::saveFile, this, std::move(promise), fileName));
+    SaveJob saveJob;
+    saveJob.setFileName(fileName);
+    ImageBuffer<unsigned char> imageBuffer;
+    saveJob.setImageBuffer(imageBuffer);
+    // saveJob.write();
+    _threads.emplace_back(std::thread(&AutoSave::saveFile, this, std::move(promise), saveJob));
+    // _threads.emplace_back(std::thread(&SaveJob::saveFile, this, std::move(promise)));
     std::string returnMessage = future.get();
 }
 
-void AutoSave::saveFile(std::promise<std::string> && promise, std::string fileName)
+void AutoSave::saveFile(std::promise<std::string> && promise, SaveJob saveJob)
 {
-    std::ofstream outputFileStream(fileName);
+    // ImageIO_PPM::writeTest(saveJob.getFileName(), saveJob.getImageBuffer());
+    
+    std::ofstream outputFileStream(saveJob.getFileName());
     if (outputFileStream.is_open()) 
-    {
-        outputFileStream << " Hello There!" << std::endl;
+    { 
+        // ImageIO_PPM::writeTest(saveJob.getFileName(), saveJob.getImageBuffer());
+
+        outputFileStream << " Hello There ABC!" << std::endl;
+
+        int _width = saveJob.getImageBuffer().getWidth();
+        int _height = saveJob.getImageBuffer().getHeight();
+
+        if (outputFileStream.is_open()) {
+            outputFileStream << "P3\n" << _width << " " << _height << " 255\n";
+                for (int i = 0; i < _width; i++) {
+                    for (int j = 0; j < _height; j++) {
+                        // int val = value(i, j);
+                        int valRed = static_cast<int>(saveJob.getImageBuffer().getRed(i,j));
+                        int valGreen = static_cast<int>(saveJob.getImageBuffer().getGreen(i,j));
+                        int valBlue = static_cast<int>(saveJob.getImageBuffer().getBlue(i,j));
+                        outputFileStream << valRed << ' ' << valGreen << ' ' << valBlue << "\n";
+                    }
+                }
+        }
+        promise.set_value("Succeeded in writing for auto save");
+    } else {
+        promise.set_value("Error Opening file for auto save");
     }
-    promise.set_value("RETURN MESSAGE");
+    
 }
 
 void AutoSave::sendMessageAtInterval()

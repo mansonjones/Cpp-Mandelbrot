@@ -33,6 +33,28 @@ void ImageIO_PPM::write()
    else std::cout << " Could not open the file";
 }
 
+void writeTest(std::string fileName, ImageBuffer<unsigned char> imageBuffer)
+{
+   std::ofstream my_Image (fileName);
+
+   int _width = imageBuffer.getWidth();
+   int _height = imageBuffer.getHeight();
+
+   if (my_Image.is_open()) {
+      my_Image << "P3\n" << _width << " " << _height << " 255\n";
+      for (int i = 0; i < _width; i++) {
+         for (int j = 0; j < _height; j++) {
+            // int val = value(i, j);
+            int valRed = static_cast<int>(imageBuffer.getRed(i,j));
+            int valGreen = static_cast<int>(imageBuffer.getGreen(i,j));
+            int valBlue = static_cast<int>(imageBuffer.getBlue(i,j));
+            my_Image << valRed << ' ' << valGreen << ' ' << valBlue << "\n";
+         }
+      }
+   }
+   else std::cout << " Could not open the file";
+
+}
 ImageBuffer<unsigned char> *ImageIO_PPM::read() 
 {
    std::ifstream fileStream(_fileName);
