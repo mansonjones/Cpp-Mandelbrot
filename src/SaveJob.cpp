@@ -38,12 +38,25 @@ ImageBuffer<unsigned char> SaveJob::getImageBuffer()
 
 void SaveJob::write()
 {
-       std::ofstream outputFileStream(_fileName);;
+    std::ofstream outputFileStream(_fileName);;
     if (outputFileStream.is_open()) 
     {
-        
-        outputFileStream << " Hello There from SaveJob !" << std::endl;
+        int _width = getImageBuffer().getWidth();
+        int _height = getImageBuffer().getHeight();
+
+        if (outputFileStream.is_open()) {
+            outputFileStream << "P3\n" << _width << " " << _height << " 255\n";
+                for (int i = 0; i < _width; i++) {
+                    for (int j = 0; j < _height; j++) {
+                        // int val = value(i, j);
+                        int valRed = static_cast<int>(getImageBuffer().getRed(i,j));
+                        int valGreen = static_cast<int>(getImageBuffer().getGreen(i,j));
+                        int valBlue = static_cast<int>(getImageBuffer().getBlue(i,j));
+                        outputFileStream << valRed << ' ' << valGreen << ' ' << valBlue << "\n";
+                    }
+                }
+        }
+    } else {
+        std::cout << " unable to open file " << std::endl;
     }
-
-
 }

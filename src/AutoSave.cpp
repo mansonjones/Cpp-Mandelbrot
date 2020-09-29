@@ -94,38 +94,10 @@ void AutoSave::launchSaveJobOnThread(std::string fileName)
 
 void AutoSave::saveFile(std::promise<std::string> && promise, SaveJob saveJob)
 {
+    // TODO: use the ImageIO library to write this out.
     // ImageIO_PPM::writeTest(saveJob.getFileName(), saveJob.getImageBuffer());
-    
-    std::ofstream outputFileStream(saveJob.getFileName());
-    if (outputFileStream.is_open()) 
-    { 
-        // ImageIO_PPM::writeTest(saveJob.getFileName(), saveJob.getImageBuffer());
+    saveJob.write();
 
-       // outputFileStream << " Hello There ABC!" << std::endl;
-
-        // TODO : Need to add ImageBuffer
-        
-        int _width = saveJob.getImageBuffer().getWidth();
-        int _height = saveJob.getImageBuffer().getHeight();
-
-        if (outputFileStream.is_open()) {
-            outputFileStream << "P3\n" << _width << " " << _height << " 255\n";
-                for (int i = 0; i < _width; i++) {
-                    for (int j = 0; j < _height; j++) {
-                        // int val = value(i, j);
-                        int valRed = static_cast<int>(saveJob.getImageBuffer().getRed(i,j));
-                        int valGreen = static_cast<int>(saveJob.getImageBuffer().getGreen(i,j));
-                        int valBlue = static_cast<int>(saveJob.getImageBuffer().getBlue(i,j));
-                        outputFileStream << valRed << ' ' << valGreen << ' ' << valBlue << "\n";
-                    }
-                }
-        }
-        
-        promise.set_value("Succeeded in writing for auto save");
-    } else {
-        promise.set_value("Error Opening file for auto save");
-    }
-    
 }
 
 void AutoSave::sendMessageAtInterval()
