@@ -84,8 +84,8 @@ wxPanel(parent)
 //       buffer[i] = 128;
 //    }
 
-
-    _mandelbrotPointer = new Mandelbrot(width, height);
+    _mandelbrotPointer = std::make_shared<Mandelbrot>(width, height);
+    // _mandelbrotPointer = new Mandelbrot(width, height);
     // _mandelbrotPointer->moveImageBufferHere(std::move(imageBuffer2));
     // _mandelbrotPointer->compute();
     std::cout << "debug 3" << std::endl;

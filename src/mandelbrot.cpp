@@ -53,7 +53,6 @@ ImageBuffer<unsigned char> Mandelbrot::getImageBuffer2()
 // Question: Should this have &&imageBuffer?
 void Mandelbrot::moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer)
 {
-
    _imageBuffer2 = std::move(imageBuffer);
 }
 

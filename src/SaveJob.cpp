@@ -38,6 +38,7 @@ ImageBuffer<unsigned char> SaveJob::getImageBuffer()
 
 void SaveJob::write()
 {
+    // TODO: Use the ImageIO code to write this out.
     std::ofstream outputFileStream(_fileName);;
     if (outputFileStream.is_open()) 
     {
