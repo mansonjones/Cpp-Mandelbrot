@@ -70,14 +70,7 @@ void AutoSave::waitForAutoSaveMessage()
            saveJob.setFileName(fileName);
            ImageBuffer<unsigned char> imageBuffer;
            saveJob.setImageBuffer(imageBuffer);
-           std::string messageToThread = "My Message";
-           // std::thread t(&AutoSave::saveFile, this, std::move(promise), saveJob);
            _threads.emplace_back(std::thread(&AutoSave::saveFile, this, std::move(promise), saveJob));
-           // Thread barrier
-           // t.join();
-           // This job needs to be launched asychronouly
-           // std::async(&AutoSave::launchSaveJobOnThread, this, fileName);
-          // launchSaveJobOnThread();
         }
     }
 }
