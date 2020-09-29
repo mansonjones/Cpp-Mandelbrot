@@ -11,6 +11,7 @@ class SaveJob
 {
 public:
     SaveJob();
+    void setFileType(FileType fileType);
     void setImageBuffer(ImageBuffer<unsigned char> imageBuffer);
     void setFileName(std::string fileName);
 

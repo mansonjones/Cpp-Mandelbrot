@@ -17,6 +17,10 @@ void SaveJob::setFileName(std::string fileName)
     _fileName = fileName;
 }
 
+void SaveJob::setFileType(FileType fileType) 
+{
+    _fileType = fileType;
+}
 std::string SaveJob::getFileName()
 {
     return _fileName;
