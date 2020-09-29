@@ -59,9 +59,19 @@ void AutoSave::waitForAutoSaveMessage()
        if (autoSave == true) {
            std::unique_lock<std::mutex> lock(_mutex);
            _counter++;
-           std::string fileName = std::string("autofile_" + std::to_string(_counter) + std::string(".pmm"));
+           std::string fileName = std::string("autosave_" + std::to_string(_counter) + std::string(".pmm"));
            std::cout << " Save Message Received " << " " << _counter << " " << fileName << std::endl;
            lock.unlock();
+           std::promise<std::string> promise;
+           std::future<std::string> future = promise.get_future();
+
+           // start thread and pass promise as argument
+           SaveJob saveJob;
+           saveJob.setFileName(fileName);
+           std::string messageToThread = "My Message";
+           std::thread t(&AutoSave::saveFile, this, std::move(promise), saveJob);
+           // Thread barrier
+           t.join();
            // This job needs to be launched asychronouly
            // std::async(&AutoSave::launchSaveJobOnThread, this, fileName);
           // launchSaveJobOnThread();
@@ -97,6 +107,8 @@ void AutoSave::saveFile(std::promise<std::string> && promise, SaveJob saveJob)
 
         outputFileStream << " Hello There ABC!" << std::endl;
 
+        // TODO : Need to add ImageBuffer
+        /*
         int _width = saveJob.getImageBuffer().getWidth();
         int _height = saveJob.getImageBuffer().getHeight();
 
@@ -112,6 +124,7 @@ void AutoSave::saveFile(std::promise<std::string> && promise, SaveJob saveJob)
                     }
                 }
         }
+        */
         promise.set_value("Succeeded in writing for auto save");
     } else {
         promise.set_value("Error Opening file for auto save");
