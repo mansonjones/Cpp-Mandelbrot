@@ -6,7 +6,8 @@
 // Question: Is there some interesting way to use a functor
 // for this class?
 // Reminder: Be sure to add const to the getters
-
+// The definition of RGB in this buffer is chosen to work easily
+// with WxWidgets, especially the wxImage class.  
 // TODO: Implement rule of five for this class
 
 template <typename T>

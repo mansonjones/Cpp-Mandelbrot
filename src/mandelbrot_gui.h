@@ -76,7 +76,10 @@ public:
 
     MandelbrotPanel *getMandelbrotPanel() { return _mandelbrotPanel; }
 
+    // This should be moved into a separate class.
     ImageBuffer<unsigned char> readFile(FileType type, std::string fileName);
+    // This should be moved into a separate class
+    void writeFile(FileType type, std::string fileName, ImageBuffer<unsigned char> imageBuffer);
 // The Path to the file we have open
     wxString _currentDocPath;
     wxString _currentFileName;

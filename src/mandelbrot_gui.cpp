@@ -396,7 +396,21 @@ void MainFrame::SaveFile(wxCommandEvent& WXUNUSED(event))
     std::cout << " currentFileName = " << _currentFileName << std::endl;
     getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, std::string(_currentFileName.mb_str()));
  
-    // Use promise / future to asynchronously save image
+    // Create promise and future
+    std::promise<std::string> promise;
+    std::future<std::string> future = promise.get_future();
+
+    // Start the thread and pass the promise as an argument
+    ImageBuffer<unsigned char> imageBuffer(300,300);
+    for (int i = 0; i < imageBuffer.getWidth(); i++) {
+        for (int j = 0; j < imageBuffer.getHeight(); j++) {
+            imageBuffer.setRed(i,j, static_cast<unsigned char> (255));
+            imageBuffer.setGreen(i,j, static_cast<unsigned char> (0));
+            imageBuffer.setBlue(i,j, static_cast<unsigned char> (0));
+        }
+    }
+    // std::thread t(&MainFrame::writeFile, std::move(promise), PPM, _currentFileName, imageBuffer);
+    // t.join();
 
     // MainEditBox->SaveFile(CurrentDocPath);
 }
@@ -485,4 +499,13 @@ ImageBuffer<unsigned char> MainFrame::readFile(FileType type, std::string fileNa
         return imageBuffer;
     }
 
+}
+
+void MainFrame::writeFile(FileType type, std::string fileName, ImageBuffer<unsigned char> imageBuffer)
+{
+    // Create promise and future
+    std::promise<std::string> promise;
+    std::future<std::string> future = promise.get_future();
+
+    // Start the thre
 }
