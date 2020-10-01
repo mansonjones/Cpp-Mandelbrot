@@ -6,8 +6,9 @@
 #include <wx/string.h>
 #include <wx/sizer.h>
 
-
+#include "AutoSave.h"
 #include "ImageBuffer.h"
+#include <string>
 
 class MainFrame;
 class Mandelbrot;
@@ -15,11 +16,14 @@ class Mandelbrot;
 
 class MandelbrotPanel : public wxPanel
 {
+private:
     std::shared_ptr<Mandelbrot> _mandelbrotPointer;
+    AutoSave *_autoSave;
     // Mandelbrot *_mandelbrotPointer;
     wxImage image;
     wxImage image2;
     wxBitmap resized;
+    ImageBuffer<unsigned char> _imageBuffer;
     int w, h;
     
 public:
@@ -29,8 +33,12 @@ public:
     void paintNow();
     void OnSize(wxSizeEvent& event);
     void render(wxDC& dc);
-    void update(ImageBuffer<unsigned char> *imageBuffer);
+    void update();
+
     Mandelbrot *getMandelbrotPointer() { return _mandelbrotPointer.get(); }
+    void moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer);
+    void debug(); // This should be removed eventually
+
     // some useful events
     /*
      void mouseMoved(wxMouseEvent& event);
@@ -67,13 +75,17 @@ public:
     void CloseFile( wxCommandEvent& event );
 
     MandelbrotPanel *getMandelbrotPanel() { return _mandelbrotPanel; }
+
+    ImageBuffer<unsigned char> readFile(FileType type, std::string fileName);
 // The Path to the file we have open
     wxString _currentDocPath;
+    wxString _currentFileName;
 
     DECLARE_EVENT_TABLE()
 private:
     wxMenuBar *_mainMenu;
-    MandelbrotPanel *_mandelbrotPanel;
+    MandelbrotPanel *_mandelbrotPanel;  // should convert to shared pointer
+    AutoSave *_autoSave;
 };
 
 enum

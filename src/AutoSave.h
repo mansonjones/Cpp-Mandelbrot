@@ -11,7 +11,7 @@
 #include <mutex>
 #include <random>
 
-
+#include "mandelbrot.h"
 #include "MessageQueue.h"
 #include "WaitingSaveJobs.h"
 #include "SaveJob.h"
@@ -27,6 +27,7 @@ class AutoSave
 {
 public:
    AutoSave();
+   AutoSave(Mandelbrot *pointer);
    ~AutoSave();
 
    void runTimerOnThread();
@@ -43,6 +44,8 @@ private:
    static std::mutex _mutex;
    SaveJob _saveJob;
    static unsigned long _counter;
+   Mandelbrot *_mandelbrotPointer;
+
 //
 };
 

@@ -70,6 +70,9 @@ template <typename T>
 ImageBuffer<T>::ImageBuffer(const ImageBuffer &source) :
    _width(source._width), _height(source._height)
 {
+   // TODO: There is a bug where the copy constructor is getting called repeatedly.
+   // This might be the cause of some of the IO problems.
+   // std::cout << " Copy Constructor" << std::endl;
    _bufferPtr = new T[_width*_height*3];  // Assume 3 channels : r, g, b
    for (int i = 0; i < _width*_height*3; i++) {
       _bufferPtr[i] = source._bufferPtr[i];

@@ -21,8 +21,11 @@ public:
    ImageBuffer<unsigned char> *getImageBuffer();
    // Move Semantics
    ImageBuffer<unsigned char> getImageBuffer2();
-   void moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer);
+   
    void compute();
+   void sayHello() { std::cout << " Mandelbrot Say Hello " << std::endl; }
+   // This function should eventually be moved into the IO class;
+   
 private:
    int value(int x, int y); 
    float _width;

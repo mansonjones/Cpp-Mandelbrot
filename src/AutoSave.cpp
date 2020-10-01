@@ -31,6 +31,12 @@ AutoSave::AutoSave()
   _messageQueue = std::make_shared<MessageQueue<bool>>();
 }
 
+AutoSave::AutoSave(Mandelbrot *mandelbrotPointer) : _mandelbrotPointer(mandelbrotPointer)
+{
+  // std::cout << " AutoSave Constructor " << std::endl;
+  _messageQueue = std::make_shared<MessageQueue<bool>>();
+}
+
 AutoSave::~AutoSave()
 {
   // set up thread barrier before this object is destroyed
@@ -61,16 +67,33 @@ void AutoSave::waitForAutoSaveMessage()
            _counter++;
            std::string fileName = std::string("autosave_" + std::to_string(_counter) + std::string(".ppm"));
            std::cout << " Save Message Received " << " " << _counter << " " << fileName << std::endl;
-           lock.unlock();
+           _mandelbrotPointer->sayHello();
+           // lock.unlock();
            std::promise<std::string> promise;
            std::future<std::string> future = promise.get_future();
 
            // start thread and pass promise as argument
            SaveJob saveJob;
            saveJob.setFileName(fileName);
-           ImageBuffer<unsigned char> imageBuffer;
-           saveJob.setImageBuffer(imageBuffer);
+           ImageBuffer<unsigned char> temp = _mandelbrotPointer->getImageBuffer2();
+            ImageBuffer<unsigned char> imageBuffer(temp.getWidth(), temp.getHeight());
+            std::cout << " (width, height) = " << temp.getWidth() << " " << temp.getHeight() << std::endl;
+           for (int i = 0; i < temp.getWidth(); i++) {
+               for (int j = 0; j < temp.getHeight(); j++) {
+                   imageBuffer.setRed(i,j,255);
+                   imageBuffer.setGreen(i,j,temp.getGreen(i,j));
+                   imageBuffer.setBlue(i,j,temp.getBlue(i,j));
+               }
+           }
+           saveJob.setImageBuffer(/* temp  */ imageBuffer);
            _threads.emplace_back(std::thread(&AutoSave::saveFile, this, std::move(promise), saveJob));
+           // set the wait
+            std::for_each(_threads.begin(), _threads.end(), [](std::thread &t) {
+                t.join();
+            });
+
+
+           lock.unlock();
         }
     }
 }
@@ -102,7 +125,7 @@ void AutoSave::saveFile(std::promise<std::string> && promise, SaveJob saveJob)
 
 void AutoSave::sendMessageAtInterval()
 {
-   unsigned int interval = 5000; // milliseconds
+   unsigned int interval = 10000; // milliseconds
 
    while (true)
    {

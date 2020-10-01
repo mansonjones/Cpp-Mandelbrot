@@ -18,6 +18,8 @@
 #include <string>
 #include <future>
 
+#include <fstream>
+
 // wxWidgets APP
 IMPLEMENT_APP(MandelbrotApp)
 
@@ -85,35 +87,38 @@ wxPanel(parent)
 //    }
 
     _mandelbrotPointer = std::make_shared<Mandelbrot>(width, height);
+    _mandelbrotPointer->compute();
     // _mandelbrotPointer = new Mandelbrot(width, height);
     // _mandelbrotPointer->moveImageBufferHere(std::move(imageBuffer2));
     // _mandelbrotPointer->compute();
+      _autoSave = new AutoSave(_mandelbrotPointer.get());
+    _autoSave->runTimerOnThread();
+    _autoSave->runMonitorOnThread();
+
     std::cout << "debug 3" << std::endl;
-    ImageBuffer<unsigned char> testBuffer = _mandelbrotPointer->getImageBuffer2();
+    // ImageBuffer<unsigned char> testBuffer = _mandelbrotPointer->getImageBuffer2();
 
-    std::cout << " Debug Mandelbrot " << std::endl;
-    std::cout << " width " << testBuffer.getWidth() << std::endl;
-    std::cout << " height " << testBuffer.getHeight() << std::endl;
-
-    std::string fName = "temp2.ppm";
-    _mandelbrotPointer->write(PPM, fName);
-    unsigned char *buffer = _mandelbrotPointer->getBuffer();
-    image2.Create( width, height, buffer);
-
-    // Mandelbrot mandelbrot(width, height);
-    // std::string fName = "temp.ppm";
-    // mandelbrot.write(fName);
-    // unsigned char *buffer = mandelbrot.getBuffer();
-    // image2.Create( width, height, buffer);  
+    // std::cout << " Debug Mandelbrot " << std::endl;
+    // std::cout << " width " << testBuffer.getWidth() << std::endl;
+    // std::cout << " height " << testBuffer.getHeight() << std::endl;
     
-   FileType fileType = PPM;
-   std::string fileName = "output2.ppm";
+    unsigned char *buffer = _mandelbrotPointer->getBuffer();
+    // i=diagnostic
+    /*
+    for (int i = 0; i < 400*400; i = i+3) {
+        buffer[i] = (unsigned char)0;
+    }
+    */
+    image2.Create( width, height, buffer);
+    
+  // FileType fileType = PPM;
+   // std::string fileName = "output2.ppm";
     
    // ImageIO *imageIO = ImageIO::getImageWriter(fileType, fileName, mandelbrotPointer->getImageBuffer());
    // imageIO->write();
     
     // load the file... ideally add a check to see if loading was successful
-    image.LoadFile(file, format);
+    // image.LoadFile(file, format);
     // w = -1;
     // h = -1;
     w = width;
@@ -157,16 +162,18 @@ void MandelbrotPanel::render(wxDC&  dc)
 {
     int neww, newh;
     dc.GetSize( &neww, &newh );
-    
+    std::cout << " ******** (new w, new h) = " << neww << " " << newh << std::endl;
     if( neww != w || newh != h )
     {
         // resized = wxBitmap( image.Scale( neww, newh /*, wxIMAGE_QUALITY_HIGH*/ ) );
         // resized = wxBitmap( image2.Scale( neww, newh /*, wxIMAGE_QUALITY_HIGH*/ ) );
-        resized = wxBitmap( image2.Scale( neww, newh /*, wxIMAGE_QUALITY_HIGH*/ ) );
+        resized = wxBitmap( image2.Scale( neww, newh , wxIMAGE_QUALITY_HIGH ) );
         w = neww;
         h = newh;
         dc.DrawBitmap( resized, 0, 0, false );
     }else{
+        resized = wxBitmap( image2 );
+        // resized = wxBitmap( image2.Scale( neww, newh , wxIMAGE_QUALITY_HIGH) );
         dc.DrawBitmap( resized, 0, 0, false );
     }
 }
@@ -181,9 +188,49 @@ void MandelbrotPanel::OnSize(wxSizeEvent& event){
     event.Skip();
 }
 
-void MandelbrotPanel::update(ImageBuffer<unsigned char> *imageBuffer) {
+void MandelbrotPanel::update() {
     std::cout << " MandelbrotPanel::update " << std::endl;
+    unsigned char *buffer = _imageBuffer.getBuffer();
+    // As a diagnostic, corrupt the buffer
+    /*
+    for (int i = 0; i < 400*400; i += 3) {
+        buffer[i] = 0;
+    }
+    */
+    std::cout << "update : (width, height) = " << _imageBuffer.getWidth() << " " << _imageBuffer.getHeight() << std::endl;
+    image2.Create(_imageBuffer.getWidth(), _imageBuffer.getHeight(), buffer);
+
+    // image2.SetData(buffer, _imageBuffer.getWidth(), _imageBuffer.getHeight());
+    //_frame->Show(TRUE);
+    // image2.Create( _imageBuffer.getWidth(), _imageBuffer.getHeight(), buffer);
+    // paintNow();
+    Refresh();
+    // Update();
+    // Layout();
 }
+
+void MandelbrotPanel::moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer)
+{
+    _imageBuffer = std::move(imageBuffer);
+    w = _imageBuffer.getWidth();
+    h = _imageBuffer.getHeight();
+    debug();
+}
+
+void MandelbrotPanel::debug()
+{
+    std::cout << " width = " << _imageBuffer.getWidth() << std::endl;
+    std::cout << " height = " << _imageBuffer.getHeight() << std::endl;
+    int counter = 0;
+    for (int i = 0; i < _imageBuffer.getWidth(); i++) {
+        for (int j = 0; j < _imageBuffer.getHeight(); j++) {
+            std::cout << counter << " " << int(_imageBuffer.getRed(i,j)) << " " << int(_imageBuffer.getGreen(i,j)) << " " << int(_imageBuffer.getBlue(i,j)) << std::endl;
+            counter++;
+        }
+    }
+    
+}
+
 bool MandelbrotApp::OnInit()
 {
     // make sure to call this first
@@ -195,9 +242,9 @@ bool MandelbrotApp::OnInit()
     SetTopWindow(_frame);
 
     // Start the AutoSaver
-    AutoSave *autoSave = new AutoSave();
-    autoSave->runTimerOnThread();
-    autoSave->runMonitorOnThread();
+    // AutoSave *autoSave = new AutoSave();
+    // autoSave->runTimerOnThread();
+    // autoSave->runMonitorOnThread();
     
     return true;
 } 
@@ -249,7 +296,10 @@ void MainFrame::NewFile(wxCommandEvent& WXUNUSED(event))
     // reset the path of our current open file
     _currentDocPath = ::wxGetCwd();
     // Set the Title to reflect the file open
-    SetTitle(_currentDocPath);
+    _currentFileName = "mandelbrot.ppm";
+    SetTitle(_currentFileName);
+
+ 
 }
 
 void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
@@ -270,12 +320,35 @@ void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
         // Set the Title to reflect the  file open
         SetTitle(wxString("Edit - ") << OpenDialog->GetFilename());
             FileType fileType = PPM;
-            std::string fileName = std::string(OpenDialog->GetFilename());
-            std::cout << " file name " << OpenDialog->GetFilename();
+            _currentFileName = OpenDialog->GetFilename();
+            std::cout << " file name " << _currentFileName << std::endl;
             // Need to fix the API here
-            ImageBuffer<unsigned char> *tempFoo;
-            ImageIO *imageIO = ImageIO::getImageWriter(fileType, fileName, tempFoo);
-            ImageBuffer<unsigned char> *tempBuffer = imageIO->read();
+            // Create an Imagebuffer that is red.
+            // Use move semantics to move the buffer into the MandelbrotPanel
+            // Once this works 
+            ImageBuffer<unsigned char> imageBuffer = readFile(PPM, std::string(_currentFileName.mb_str()));
+            
+            // Diagnostic
+            
+            /*
+            for (int i = 0; i < imageBuffer.getWidth(); ++i) {
+                for (int j = 0; j < imageBuffer.getHeight(); ++j) {
+                    imageBuffer.setRed(i,j,(unsigned char)255);
+                    imageBuffer.setGreen(i,j,(unsigned char)0);
+                    imageBuffer.setBlue(i,j,(unsigned char)0);
+                }
+            }
+            */
+
+            // Use move semantics to copy the buffer into the MandelbrotPanel class
+            _mandelbrotPanel->moveImageBufferHere(imageBuffer);
+            _mandelbrotPanel->update();
+
+            // Note that at this point tempora
+            // ImageBuffer<unsigned char> *tempFoo;
+            // ImageIO *imageIO = ImageIO::getImageWriter(fileType, std::string(_currentFileName.mb_str()), tempFoo);
+            // ImageBuffer<unsigned char> *tempBuffer = imageIO->read();
+
             // Render the image buffer to the panel
                 
     }
@@ -346,4 +419,45 @@ void MainFrame::SaveFileAs(wxCommandEvent& WXUNUSED(event))
 void MainFrame::Quit(wxCommandEvent& WXUNUSED(event))
 {
     Close(TRUE); // Close the window
+}
+
+// TODO: Move this function into the IO class
+ImageBuffer<unsigned char> MainFrame::readFile(FileType type, std::string fileName)
+{
+    std::ifstream fileStream(fileName);
+    std::string lineBuffer;
+
+   if (fileStream.is_open())
+   {
+      // read first line
+      std::getline(fileStream, lineBuffer);
+      if (lineBuffer != "P3") 
+      {
+         std::cout << " error! " << std::endl; 
+      }
+
+      // read second line
+      std::getline(fileStream,lineBuffer);
+      std::istringstream lineStream(lineBuffer);
+      int width, height, bitDepth;
+      lineStream >> width >> height >> bitDepth;
+      ImageBuffer<unsigned char> imageBuffer(width, height);
+      int red, green, blue;
+      for (int i = 0; i < width; ++i) {
+         for (int j = 0; j < height; ++j) {
+            std::getline(fileStream,lineBuffer);
+            // std::istringstream lineStream2(lineBuffer);
+            lineStream = std::istringstream(lineBuffer);
+            lineStream >> red >> green >> blue;
+            imageBuffer.setRed(i,j,static_cast<unsigned char>(red));
+            imageBuffer.setGreen(i,j,static_cast<unsigned char>(green));
+            imageBuffer.setBlue(i,j,static_cast<unsigned char>(blue));
+         }
+      }
+      return imageBuffer;
+   } else {
+        ImageBuffer<unsigned char> imageBuffer;
+        return imageBuffer;
+    }
+
 }

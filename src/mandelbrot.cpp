@@ -13,10 +13,10 @@ Mandelbrot::Mandelbrot(float width, float height) : _width(width), _height(heigh
    _imageBuffer = new ImageBuffer<unsigned char>(_width, _height);
    for (int i = 0; i < _width; i++) {
       for (int j = 0; j < _height; j++) {
-          unsigned char foo = static_cast<unsigned char>(value(i,j)); 
-          _imageBuffer->setRed( i, j, foo); 
-          _imageBuffer->setGreen( i, j, foo); 
-          _imageBuffer->setBlue( i, j, foo); 
+          unsigned char mandelbrotValue = static_cast<unsigned char>(value(i,j)); 
+          _imageBuffer->setRed( i, j, mandelbrotValue); 
+          _imageBuffer->setGreen( i, j, mandelbrotValue); 
+          _imageBuffer->setBlue( i, j, mandelbrotValue); 
       }
    }
 }
@@ -39,21 +39,17 @@ Mandelbrot::~Mandelbrot()
 
 unsigned char *Mandelbrot::getBuffer() 
 {
-   // return _buffer;
+   // return raw _buffer;
    return _imageBuffer->getBuffer();
 }
 
 ImageBuffer<unsigned char> Mandelbrot::getImageBuffer2() 
 {
+   /*
    ImageBuffer<unsigned char> imageBuffer = std::move(_imageBuffer2);
    return imageBuffer;
-}
-
-
-// Question: Should this have &&imageBuffer?
-void Mandelbrot::moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer)
-{
-   _imageBuffer2 = std::move(imageBuffer);
+   */
+  return _imageBuffer2;
 }
 
 ImageBuffer<unsigned char> *Mandelbrot::getImageBuffer() 
