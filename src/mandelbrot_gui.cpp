@@ -214,7 +214,7 @@ void MandelbrotPanel::moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer
     _imageBuffer = std::move(imageBuffer);
     w = _imageBuffer.getWidth();
     h = _imageBuffer.getHeight();
-    debug();
+    // debug();
 }
 
 void MandelbrotPanel::debug()
@@ -284,6 +284,8 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& position, const wxSiz
 
         _mandelbrotPanel = new MandelbrotPanel( this, wxT("../images/cassini.jpg"), wxBITMAP_TYPE_JPEG); 
 
+        _currentDocPath = ::wxGetCwd();
+        _currentFileName = wxString("mandelbrot1.ppm");
 
     // Maximize();  // Maximize the window
 
@@ -373,9 +375,11 @@ void MainFrame::SaveFile(wxCommandEvent& WXUNUSED(event))
     // Save to the already-set path for the document
     // TODO: Save the file
     std::cout << " currentDocPath = " << _currentDocPath << std::endl;
-    std::string fName = "temp3.ppm";
-    getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fName);
+    std::cout << " currentFileName = " << _currentFileName << std::endl;
+    getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, std::string(_currentFileName.mb_str()));
  
+    // Use promise / future to asynchronously save image
+
     // MainEditBox->SaveFile(CurrentDocPath);
 }
 
@@ -394,9 +398,12 @@ void MainFrame::SaveFileAs(wxCommandEvent& WXUNUSED(event))
         // MainEditBox->SaveFile(CurrentDocPath); // Save the file to the selected path
         // Set the Title to reflect the file open
         SetTitle(wxString("Edit - ") << SaveDialog->GetFilename());
-        std::string fileName = std::string(SaveDialog->GetFilename());
+        _currentFileName = SaveDialog->GetFilename();
 
-        getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fileName);
+        std::cout << " path " << _currentDocPath << std::endl;
+        std::cout << " file " << _currentFileName << std::endl;
+
+        getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, std::string(_currentFileName.mb_str()));
         // Perform the file write asynchronously.
         // I want to post a message in the title bar when the file write is done
         // std::promise<std::string> promise;
