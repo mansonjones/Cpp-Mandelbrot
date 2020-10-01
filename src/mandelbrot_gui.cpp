@@ -6,6 +6,7 @@
 #include "mandelbrot.h"
 
 #include "AutoSave.h"
+#include "Constants.h"
 #include "ImageIO.h"
 #include "ImageBuffer.h"
 #include "ImageIO_PPM.h"
@@ -285,7 +286,8 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& position, const wxSiz
         _mandelbrotPanel = new MandelbrotPanel( this, wxT("../images/cassini.jpg"), wxBITMAP_TYPE_JPEG); 
 
         _currentDocPath = ::wxGetCwd();
-        _currentFileName = wxString("mandelbrot1.ppm");
+        _currentFileName = wxString(Constants::defaultFileName);
+        SetTitle(_currentFileName);
 
     // Maximize();  // Maximize the window
 
@@ -297,11 +299,27 @@ void MainFrame::NewFile(wxCommandEvent& WXUNUSED(event))
     // MainEditBox->Clear();
     // reset the path of our current open file
     _currentDocPath = ::wxGetCwd();
-    // Set the Title to reflect the file open
-    _currentFileName = "mandelbrot.ppm";
-    SetTitle(_currentFileName);
 
- 
+   wxFileDialog *NewFileDialog = new wxFileDialog(
+        this, "Define New File ", wxEmptyString, wxEmptyString,
+        "Image Files files (*.ppm)|*.ppm",
+        wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
+
+    // Creates a Save Dialog with 4 file types
+    if (NewFileDialog->ShowModal() == wxID_OK) // If the user clicked "OK"
+    {
+        _currentDocPath = NewFileDialog->GetPath();
+
+        SetTitle(wxString("Edit - ") << NewFileDialog->GetFilename());
+        _currentFileName = NewFileDialog->GetFilename();
+
+        std::cout << " path " << _currentDocPath << std::endl;
+        std::cout << " file " << _currentFileName << std::endl;
+
+    }
+
+    // Clean up after ourselves
+    NewFileDialog->Destroy();
 }
 
 void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
@@ -365,7 +383,7 @@ void MainFrame::CloseFile(wxCommandEvent& WXUNUSED(event))
     _currentDocPath = ::wxGetCwd();
     // Set the Title to reflect the file open
     std::string fName = "temp_close_file.ppm";
-    getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, fName);
+    getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, std::string(_currentFileName.mb_str()));
 
     SetTitle("Edit - untitled *");
 }
