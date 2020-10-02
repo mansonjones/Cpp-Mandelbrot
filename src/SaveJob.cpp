@@ -1,6 +1,8 @@
 #include "SaveJob.h"
 
 #include <fstream>
+#include <sstream>
+#include <string>
 
 SaveJob::SaveJob()
 {
@@ -47,16 +49,25 @@ void SaveJob::write()
 
         if (outputFileStream.is_open()) {
             outputFileStream << "P3\n" << _width << " " << _height << " 255\n";
-                for (int i = 0; i < _width; i++) {
-                    for (int j = 0; j < _height; j++) {
+                for (int i = 0; i < _width; ++i) {
+                    for (int j = 0; j < _height; ++j) {
                         // int val = value(i, j);
-                        int valRed = static_cast<int>(getImageBuffer().getRed(i,j));
-                        int valGreen = static_cast<int>(getImageBuffer().getGreen(i,j));
-                        int valBlue = static_cast<int>(getImageBuffer().getBlue(i,j));
-                        outputFileStream << valRed << ' ' << valGreen << ' ' << valBlue << "\n";
+                        // int valRed = static_cast<int>(getImageBuffer().getRed(i,j));
+                        // int valGreen = static_cast<int>(getImageBuffer().getGreen(i,j));
+                        // int valBlue = static_cast<int>(getImageBuffer().getBlue(i,j));
+                        int valRed = getImageBuffer().getRed(i,j);
+                        int valGreen = getImageBuffer().getGreen(i,j);
+                        int valBlue = getImageBuffer().getBlue(i,j);
+                        std::stringstream stringStream;
+                        stringStream << std::to_string(valRed) << " " << std::to_string(valGreen) << " " << std::to_string(valBlue) << "\n";
+                        outputFileStream << stringStream.str();
+                        // outputFileStream << valRed << " " << valGreen << " " << valBlue << "\n";
+                        outputFileStream.flush();
                     }
                 }
         }
+        outputFileStream.close();
+        // std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     } else {
         std::cout << " unable to open file " << std::endl;
     }

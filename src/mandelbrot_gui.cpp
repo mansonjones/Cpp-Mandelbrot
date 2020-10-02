@@ -6,6 +6,7 @@
 #include "mandelbrot.h"
 
 #include "AutoSave.h"
+#include "BufferEffects.h"
 #include "Constants.h"
 #include "ImageIO.h"
 #include "ImageBuffer.h"
@@ -71,32 +72,19 @@ wxPanel(parent)
 {
     // Write raw data to a wxImage
     // Eventually convert to wxImage
-    int width = 400; 
-    int height = 400;
-
-    // AutoSave *autoSave = new AutoSave();
-    // autoSave->runScheduler();
-    // autoSave->waitForAutoSave();
-    // Note that the ImageBuffer is managed using move semantics
-    // ImageBuffer<unsigned char> imageBuffer2(width, height);
-
-    // unsigned char *buffer = new unsigned char[width*height*3];
-//    unsigned char *buffer = new unsigned char[width*height*3];
-
-//    for (int i = 0; i < width*height*3; i++) {
-//       buffer[i] = 128;
-//    }
+    const int width = Constants::panelWidth;
+    const int height = Constants::panelHeight;
 
     _mandelbrotPointer = std::make_shared<Mandelbrot>(width, height);
     _mandelbrotPointer->compute();
     // _mandelbrotPointer = new Mandelbrot(width, height);
     // _mandelbrotPointer->moveImageBufferHere(std::move(imageBuffer2));
     // _mandelbrotPointer->compute();
+    /*
       _autoSave = new AutoSave(_mandelbrotPointer.get());
     _autoSave->runTimerOnThread();
     _autoSave->runMonitorOnThread();
-
-    std::cout << "debug 3" << std::endl;
+    */
     // ImageBuffer<unsigned char> testBuffer = _mandelbrotPointer->getImageBuffer2();
 
     // std::cout << " Debug Mandelbrot " << std::endl;
@@ -163,7 +151,6 @@ void MandelbrotPanel::render(wxDC&  dc)
 {
     int neww, newh;
     dc.GetSize( &neww, &newh );
-    std::cout << " ******** (new w, new h) = " << neww << " " << newh << std::endl;
     if( neww != w || newh != h )
     {
         // resized = wxBitmap( image.Scale( neww, newh /*, wxIMAGE_QUALITY_HIGH*/ ) );
@@ -190,15 +177,8 @@ void MandelbrotPanel::OnSize(wxSizeEvent& event){
 }
 
 void MandelbrotPanel::update() {
-    std::cout << " MandelbrotPanel::update " << std::endl;
     unsigned char *buffer = _imageBuffer.getBuffer();
-    // As a diagnostic, corrupt the buffer
-    /*
-    for (int i = 0; i < 400*400; i += 3) {
-        buffer[i] = 0;
-    }
-    */
-    std::cout << "update : (width, height) = " << _imageBuffer.getWidth() << " " << _imageBuffer.getHeight() << std::endl;
+
     image2.Create(_imageBuffer.getWidth(), _imageBuffer.getHeight(), buffer);
 
     // image2.SetData(buffer, _imageBuffer.getWidth(), _imageBuffer.getHeight());
@@ -313,9 +293,6 @@ void MainFrame::NewFile(wxCommandEvent& WXUNUSED(event))
         SetTitle(wxString("Edit - ") << NewFileDialog->GetFilename());
         _currentFileName = NewFileDialog->GetFilename();
 
-        std::cout << " path " << _currentDocPath << std::endl;
-        std::cout << " file " << _currentFileName << std::endl;
-
     }
 
     // Clean up after ourselves
@@ -341,7 +318,6 @@ void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
         SetTitle(wxString("Edit - ") << OpenDialog->GetFilename());
             FileType fileType = PPM;
             _currentFileName = OpenDialog->GetFilename();
-            std::cout << " file name " << _currentFileName << std::endl;
             // Need to fix the API here
             // Create an Imagebuffer that is red.
             // Use move semantics to move the buffer into the MandelbrotPanel
@@ -391,24 +367,25 @@ void MainFrame::CloseFile(wxCommandEvent& WXUNUSED(event))
 void MainFrame::SaveFile(wxCommandEvent& WXUNUSED(event))
 {
     // Save to the already-set path for the document
-    // TODO: Save the file
-    std::cout << " currentDocPath = " << _currentDocPath << std::endl;
-    std::cout << " currentFileName = " << _currentFileName << std::endl;
-    getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, std::string(_currentFileName.mb_str()));
+    // getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, std::string(_currentFileName.mb_str()));
  
     // Create promise and future
-    std::promise<std::string> promise;
-    std::future<std::string> future = promise.get_future();
+    // std::promise<std::string> promise;
+    // std::future<std::string> future = promise.get_future();
 
     // Start the thread and pass the promise as an argument
-    ImageBuffer<unsigned char> imageBuffer(300,300);
-    for (int i = 0; i < imageBuffer.getWidth(); i++) {
-        for (int j = 0; j < imageBuffer.getHeight(); j++) {
-            imageBuffer.setRed(i,j, static_cast<unsigned char> (255));
-            imageBuffer.setGreen(i,j, static_cast<unsigned char> (0));
-            imageBuffer.setBlue(i,j, static_cast<unsigned char> (0));
-        }
-    }
+    // 
+    ImageBuffer<unsigned char> imageBuffer(200,200);
+
+    BufferEffects::setColor(green, imageBuffer);
+
+    SaveJob saveJob;
+    saveJob.setFileName(std::string(_currentFileName.mb_str()));
+    saveJob.setFileType(PPM);
+    saveJob.setImageBuffer(imageBuffer);
+    // std::thread t(&)
+    saveJob.write();
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     // std::thread t(&MainFrame::writeFile, std::move(promise), PPM, _currentFileName, imageBuffer);
     // t.join();
 
@@ -432,9 +409,6 @@ void MainFrame::SaveFileAs(wxCommandEvent& WXUNUSED(event))
         SetTitle(wxString("Edit - ") << SaveDialog->GetFilename());
         _currentFileName = SaveDialog->GetFilename();
 
-        std::cout << " path " << _currentDocPath << std::endl;
-        std::cout << " file " << _currentFileName << std::endl;
-
         getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, std::string(_currentFileName.mb_str()));
         // Perform the file write asynchronously.
         // I want to post a message in the title bar when the file write is done
@@ -448,7 +422,6 @@ void MainFrame::SaveFileAs(wxCommandEvent& WXUNUSED(event))
 
         // retrieve return message via future and print to console
         // std::string returnMessage = future.get();
-        // std::cout << "Return message from thread is: " << returnMessage << std::endl;
     }
 
     // Clean up after ourselves
@@ -472,7 +445,7 @@ ImageBuffer<unsigned char> MainFrame::readFile(FileType type, std::string fileNa
       std::getline(fileStream, lineBuffer);
       if (lineBuffer != "P3") 
       {
-         std::cout << " error! " << std::endl; 
+         // std::cout << " error! " << std::endl; 
       }
 
       // read second line
