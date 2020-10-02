@@ -7,9 +7,11 @@
 std::mutex SaveJob::_ioMutex;
 
 SaveJob::SaveJob()
-{
+{}
 
-}
+SaveJob::SaveJob(FileType fileType, std::string fileName, ImageBuffer<unsigned char> imageBuffer) :
+_fileType(fileType), _fileName(fileName), _imageBuffer(imageBuffer)
+{}
 void SaveJob::setImageBuffer(ImageBuffer<unsigned char> imageBuffer)
 {
     _fileType = PPM;
