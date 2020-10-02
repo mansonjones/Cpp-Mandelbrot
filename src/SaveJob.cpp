@@ -25,17 +25,17 @@ void SaveJob::setFileType(FileType fileType)
 {
     _fileType = fileType;
 }
-std::string SaveJob::getFileName()
+std::string SaveJob::getFileName() const
 {
     return _fileName;
 }
 
-FileType SaveJob::getFileType()
+FileType SaveJob::getFileType() const
 {
     return _fileType;
 }
 
-ImageBuffer<unsigned char> SaveJob::getImageBuffer()
+ImageBuffer<unsigned char> SaveJob::getImageBuffer() const
 {
     return _imageBuffer;
 }

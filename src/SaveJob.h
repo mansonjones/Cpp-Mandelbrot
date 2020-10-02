@@ -15,9 +15,9 @@ public:
     void setImageBuffer(ImageBuffer<unsigned char> imageBuffer);
     void setFileName(std::string fileName);
 
-    std::string getFileName();
-    FileType getFileType();
-    ImageBuffer<unsigned char> getImageBuffer();
+    std::string getFileName() const;
+    FileType getFileType() const;
+    ImageBuffer<unsigned char> getImageBuffer() const;
     void write();
 private:
     // Todo: Add image 
