@@ -78,3 +78,11 @@ void SaveJob::write()
         std::cout << " unable to open file " << std::endl;
     }
 }
+
+void SaveJob::operator()()
+{
+    // TODO : Revise this code to write to a file
+    // Need to figure out how to use mutex to lock the
+    // output file stream object
+    std::cout << " SaveJob function operator " << std::endl;
+}

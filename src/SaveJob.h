@@ -20,6 +20,8 @@ public:
     FileType getFileType() const;
     ImageBuffer<unsigned char> getImageBuffer() const;
     void write();
+    // Add Call operator
+    void operator()();
 private:
     // Todo: Add image 
     ImageBuffer<unsigned char> _imageBuffer;
