@@ -46,7 +46,7 @@ void SaveJob::write()
 {
     // TODO: Use the ImageIO code to write this out.
     std::unique_lock<std::mutex> ioLock(_ioMutex);
-    std::ofstream outputFileStream(_fileName);;
+    std::ofstream outputFileStream(_fileName);
     if (outputFileStream.is_open()) 
     {
         int _width = getImageBuffer().getWidth();
@@ -84,5 +84,15 @@ void SaveJob::operator()()
     // TODO : Revise this code to write to a file
     // Need to figure out how to use mutex to lock the
     // output file stream object
+    // TODO: Use mutex to lock the output file stream
     std::cout << " SaveJob function operator " << std::endl;
+    std::ofstream outputFileStream(_fileName);
+    if (outputFileStream.is_open()) {
+        outputFileStream << " Using the SaveJob call operator " << std::endl;
+        outputFileStream << "File Name = " << _fileName << std::endl;
+        outputFileStream << " width = " << _imageBuffer.getWidth() << std::endl;
+        outputFileStream << " height = " << _imageBuffer.getHeight() << std::endl;
+        outputFileStream.close();
+    }    
+
 }
