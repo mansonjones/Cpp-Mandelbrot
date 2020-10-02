@@ -4,6 +4,8 @@
 #include <sstream>
 #include <string>
 
+std::mutex SaveJob::_ioMutex;
+
 SaveJob::SaveJob()
 {
 
@@ -41,6 +43,7 @@ ImageBuffer<unsigned char> SaveJob::getImageBuffer()
 void SaveJob::write()
 {
     // TODO: Use the ImageIO code to write this out.
+    std::unique_lock<std::mutex> ioLock(_ioMutex);
     std::ofstream outputFileStream(_fileName);;
     if (outputFileStream.is_open()) 
     {
@@ -67,6 +70,7 @@ void SaveJob::write()
                 }
         }
         outputFileStream.close();
+        ioLock.unlock();
         // std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     } else {
         std::cout << " unable to open file " << std::endl;

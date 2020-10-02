@@ -71,7 +71,17 @@ int Mandelbrot::value(int x, int y) {
   else return 0;
 }
 
-
+void Mandelbrot::render(ImageBuffer<unsigned char> &imageBuffer)
+{
+   for (int i = 0; i < imageBuffer.getWidth(); i++) {
+      for (int j = 0; j < imageBuffer.getHeight(); j++) {
+          unsigned char mandelbrotValue = static_cast<unsigned char>(value(i,j)); 
+          imageBuffer.setRed( i, j, mandelbrotValue); 
+          imageBuffer.setGreen( i, j, mandelbrotValue); 
+          imageBuffer.setBlue( i, j, mandelbrotValue); 
+      }
+   }
+}
 // Eventually this should be update to use the
 // ImageIO library
 void Mandelbrot::write(FileType fileType, std::string fileName) 

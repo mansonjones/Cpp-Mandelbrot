@@ -31,16 +31,16 @@ public:
    // 
    ~ImageBuffer();
 
-   T getRed(int i, int j);
-   T getGreen(int i, int j);
-   T getBlue(int i, int j);
+   T getRed(int i, int j) const;
+   T getGreen(int i, int j) const;
+   T getBlue(int i, int j) const;
 
    void setRed(int i, int j, T r); 
    void setGreen(int i, int j, T g); 
    void setBlue(int i, int j, T b);
 
-   int getWidth();
-   int getHeight();
+   int getWidth() const;
+   int getHeight() const;
 
    void setWidth(int w);
    void setHeight(int h);
@@ -48,9 +48,9 @@ public:
    // Question.  What should the function thats reallocate the
    // buffer be called?  Is that function even necessary?
 
-   T *getBuffer(); 
+   T *getBuffer() const; 
 private:
-  int getIndex(int i, int j);
+  int getIndex(int i, int j) const;
   T *_bufferPtr;  // What is the appropriate smart pointer?  unique_ptr?
   int _width;
   int _height;
@@ -125,19 +125,19 @@ ImageBuffer<T>::~ImageBuffer()
 }
 
 template <typename T>
-T ImageBuffer<T>::getRed(int i, int j)
+T ImageBuffer<T>::getRed(int i, int j) const
 {
    return _bufferPtr[getIndex(i,j)];
 }
 
 template <typename T>
-T ImageBuffer<T>::getGreen(int i, int j)
+T ImageBuffer<T>::getGreen(int i, int j) const
 {
    return _bufferPtr[getIndex(i,j) + 1];
 }
 
 template <typename T>
-T ImageBuffer<T>::getBlue(int i, int j)
+T ImageBuffer<T>::getBlue(int i, int j) const
 {
    return _bufferPtr[getIndex(i,j) + 2];
 }
@@ -161,13 +161,13 @@ void ImageBuffer<T>::setBlue(int i, int j, T b)
 }
 
 template <typename T>
-int ImageBuffer<T>::getWidth()
+int ImageBuffer<T>::getWidth() const
 {
   return _width;
 }
 
 template <typename T>
-int ImageBuffer<T>::getHeight()
+int ImageBuffer<T>::getHeight() const
 {
   return _height;
 }
@@ -187,13 +187,13 @@ void ImageBuffer<T>::setHeight(int h)
    // Question.  What should the function the reallocate the
    // buffer be called?
 template <typename T>
-T *ImageBuffer<T>::getBuffer() 
+T *ImageBuffer<T>::getBuffer() const
 {
    return _bufferPtr;
 }
 
 template <typename T>
-int ImageBuffer<T>::getIndex(int i, int j) 
+int ImageBuffer<T>::getIndex(int i, int j) const
 {
     return 3*(i*_width + j);
 }

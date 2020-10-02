@@ -22,6 +22,7 @@ public:
    // Move Semantics
    ImageBuffer<unsigned char> getImageBuffer2();
    
+   void render(ImageBuffer<unsigned char> &imageBuffer);  // This could be turned into a static function
    void compute();
    void sayHello() { std::cout << " Mandelbrot Say Hello " << std::endl; }
    // This function should eventually be moved into the IO class;

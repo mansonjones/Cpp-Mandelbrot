@@ -1,4 +1,5 @@
 #include "AutoSave.h"
+#include "BufferEffects.h"
 #include "ImageIO_PPM.h"
 
 #include <chrono>
@@ -63,12 +64,13 @@ void AutoSave::waitForAutoSaveMessage()
        bool autoSave = _messageQueue->receive();
        
        if (autoSave == true) {
-           std::unique_lock<std::mutex> lock(_mutex);
+           std::unique_lock<std::mutex> mylock(_mutex);
            _counter++;
            std::string fileName = std::string("autosave_" + std::to_string(_counter) + std::string(".ppm"));
            std::cout << " Save Message Received " << " " << _counter << " " << fileName << std::endl;
            _mandelbrotPointer->sayHello();
            // lock.unlock();
+           std::lock_guard<std::mutex> lock(_mutex);
            std::promise<std::string> promise;
            std::future<std::string> future = promise.get_future();
 
@@ -77,14 +79,9 @@ void AutoSave::waitForAutoSaveMessage()
            saveJob.setFileName(fileName);
            ImageBuffer<unsigned char> temp = _mandelbrotPointer->getImageBuffer2();
             ImageBuffer<unsigned char> imageBuffer(temp.getWidth(), temp.getHeight());
-            std::cout << " (width, height) = " << temp.getWidth() << " " << temp.getHeight() << std::endl;
-           for (int i = 0; i < temp.getWidth(); i++) {
-               for (int j = 0; j < temp.getHeight(); j++) {
-                   imageBuffer.setRed(i,j,255);
-                   imageBuffer.setGreen(i,j,temp.getGreen(i,j));
-                   imageBuffer.setBlue(i,j,temp.getBlue(i,j));
-               }
-           }
+            // std::cout << " (width, height) = " << temp.getWidth() << " " << temp.getHeight() << std::endl;
+            BufferEffects::setColor(blue, temp);  
+
            saveJob.setImageBuffer(/* temp  */ imageBuffer);
            _threads.emplace_back(std::thread(&AutoSave::saveFile, this, std::move(promise), saveJob));
            // set the wait
@@ -93,7 +90,7 @@ void AutoSave::waitForAutoSaveMessage()
             });
 
 
-           lock.unlock();
+           // lock.unlock();
         }
     }
 }

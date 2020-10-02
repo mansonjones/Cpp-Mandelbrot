@@ -80,11 +80,11 @@ wxPanel(parent)
     // _mandelbrotPointer = new Mandelbrot(width, height);
     // _mandelbrotPointer->moveImageBufferHere(std::move(imageBuffer2));
     // _mandelbrotPointer->compute();
-    /*
+    
       _autoSave = new AutoSave(_mandelbrotPointer.get());
     _autoSave->runTimerOnThread();
     _autoSave->runMonitorOnThread();
-    */
+    
     // ImageBuffer<unsigned char> testBuffer = _mandelbrotPointer->getImageBuffer2();
 
     // std::cout << " Debug Mandelbrot " << std::endl;
@@ -285,7 +285,7 @@ void MainFrame::NewFile(wxCommandEvent& WXUNUSED(event))
         "Image Files files (*.ppm)|*.ppm",
         wxFD_SAVE | wxFD_OVERWRITE_PROMPT, wxDefaultPosition);
 
-    // Creates a Save Dialog with 4 file types
+    // Creates a Save Dialog with ppm file type
     if (NewFileDialog->ShowModal() == wxID_OK) // If the user clicked "OK"
     {
         _currentDocPath = NewFileDialog->GetPath();
