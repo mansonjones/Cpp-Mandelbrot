@@ -9,6 +9,7 @@
 #include "AutoSave.h"
 #include "ImageBuffer.h"
 #include <string>
+#include <thread>
 
 class MainFrame;
 class Mandelbrot;
@@ -17,7 +18,7 @@ class Mandelbrot;
 class MandelbrotPanel : public wxPanel
 {
 private:
-    std::shared_ptr<Mandelbrot> _mandelbrotPointer;
+    std::unique_ptr<Mandelbrot> _mandelbrotPointer;
     AutoSave *_autoSave;
     // Mandelbrot *_mandelbrotPointer;
     wxImage image;
@@ -89,6 +90,8 @@ private:
     wxMenuBar *_mainMenu;
     MandelbrotPanel *_mandelbrotPanel;  // should convert to shared pointer
     AutoSave *_autoSave;
+    std::thread _saveThread;
+    std::shared_ptr<SaveJob> _saveJob;
 };
 
 enum

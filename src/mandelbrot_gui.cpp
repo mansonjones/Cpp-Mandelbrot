@@ -75,15 +75,15 @@ wxPanel(parent)
     const int width = Constants::panelWidth;
     const int height = Constants::panelHeight;
 
-    _mandelbrotPointer = std::make_shared<Mandelbrot>(width, height);
-    _mandelbrotPointer->compute();
+    _mandelbrotPointer = std::make_unique<Mandelbrot>(width, height);
+    // _mandelbrotPointer->compute();
     // _mandelbrotPointer = new Mandelbrot(width, height);
     // _mandelbrotPointer->moveImageBufferHere(std::move(imageBuffer2));
     // _mandelbrotPointer->compute();
     
-      _autoSave = new AutoSave(_mandelbrotPointer.get());
-    _autoSave->runTimerOnThread();
-    _autoSave->runMonitorOnThread();
+    //  _autoSave = new AutoSave(_mandelbrotPointer.get());
+    // _autoSave->runTimerOnThread();
+    // _autoSave->runMonitorOnThread();
     
     // ImageBuffer<unsigned char> testBuffer = _mandelbrotPointer->getImageBuffer2();
 
@@ -91,15 +91,19 @@ wxPanel(parent)
     // std::cout << " width " << testBuffer.getWidth() << std::endl;
     // std::cout << " height " << testBuffer.getHeight() << std::endl;
     
-    unsigned char *buffer = _mandelbrotPointer->getBuffer();
+    size_t bufferSize = _mandelbrotPointer->getImageBuffer()->getBufferSize();
+    unsigned char *buffer = new unsigned char[bufferSize];
+    buffer = _mandelbrotPointer->getBuffer();
     // i=diagnostic
     /*
     for (int i = 0; i < 400*400; i = i+3) {
         buffer[i] = (unsigned char)0;
     }
     */
-    image2.Create( width, height, buffer);
-    
+    bool imageCreationSuccess = image2.Create( width, height, buffer);
+    if (!imageCreationSuccess) {
+        std::cerr << " image creation did not succeed " << std::endl;
+    }
   // FileType fileType = PPM;
    // std::string fileName = "output2.ppm";
     
@@ -155,7 +159,7 @@ void MandelbrotPanel::render(wxDC&  dc)
     {
         // resized = wxBitmap( image.Scale( neww, newh /*, wxIMAGE_QUALITY_HIGH*/ ) );
         // resized = wxBitmap( image2.Scale( neww, newh /*, wxIMAGE_QUALITY_HIGH*/ ) );
-        resized = wxBitmap( image2.Scale( neww, newh , wxIMAGE_QUALITY_HIGH ) );
+        resized = wxBitmap( image2.Scale( neww, newh /* ,  wxIMAGE_QUALITY_HIGH */ ) );
         w = neww;
         h = newh;
         dc.DrawBitmap( resized, 0, 0, false );
@@ -177,15 +181,15 @@ void MandelbrotPanel::OnSize(wxSizeEvent& event){
 }
 
 void MandelbrotPanel::update() {
-    unsigned char *buffer = _imageBuffer.getBuffer();
+    // unsigned char *buffer = _imageBuffer.getBuffer();
 
-    image2.Create(_imageBuffer.getWidth(), _imageBuffer.getHeight(), buffer);
+    // image2.Create(_imageBuffer.getWidth(), _imageBuffer.getHeight(), buffer);
 
     // image2.SetData(buffer, _imageBuffer.getWidth(), _imageBuffer.getHeight());
     //_frame->Show(TRUE);
     // image2.Create( _imageBuffer.getWidth(), _imageBuffer.getHeight(), buffer);
     // paintNow();
-    Refresh();
+    // Refresh();
     // Update();
     // Layout();
 }
@@ -357,7 +361,9 @@ void MainFrame::CloseFile(wxCommandEvent& WXUNUSED(event))
     // MainEditBox->Clear();
     // Reset the current File being edited
     _currentDocPath = ::wxGetCwd();
-    // Set the Title to reflect the file open
+    // Set the Title to reflect the file openha
+    // TODO: What should be the behavior here?  Save the file and reset the
+    // name to unknown?
     std::string fName = "temp_close_file.ppm";
     getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, std::string(_currentFileName.mb_str()));
 
@@ -379,13 +385,17 @@ void MainFrame::SaveFile(wxCommandEvent& WXUNUSED(event))
 
     BufferEffects::setColor(green, imageBuffer);
 
-    SaveJob saveJob;
-    saveJob.setFileName(std::string(_currentFileName.mb_str()));
-    saveJob.setFileType(PPM);
-    saveJob.setImageBuffer(imageBuffer);
+    _saveJob = std::make_shared<SaveJob>();
+    // SaveJob saveJob;
+    _saveJob->setFileName(std::string(_currentFileName.mb_str()));
+    _saveJob->setFileType(PPM);
+    _saveJob->setImageBuffer(imageBuffer);
+    // Create a thread and call the write function
+    _saveThread = std::thread(&SaveJob::write, _saveJob);
+    _saveThread.join();
     // std::thread t(&)
-    saveJob.write();
-    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    // saveJob.write();
+    // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     // std::thread t(&MainFrame::writeFile, std::move(promise), PPM, _currentFileName, imageBuffer);
     // t.join();
 

@@ -32,6 +32,7 @@ void Mandelbrot::compute()
       }
    }
 }
+
 Mandelbrot::~Mandelbrot()
 {
    delete _imageBuffer;

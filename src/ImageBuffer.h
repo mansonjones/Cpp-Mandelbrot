@@ -49,9 +49,10 @@ public:
    // buffer be called?  Is that function even necessary?
 
    T *getBuffer() const; 
+   size_t getBufferSize() const;
 private:
   int getIndex(int i, int j) const;
-  T *_bufferPtr;  // What is the appropriate smart pointer?  unique_ptr?
+  T *_bufferPtr;  // What is the appropriate smart pointer?  shared_ptr?
   int _width;
   int _height;
 };
@@ -190,6 +191,12 @@ template <typename T>
 T *ImageBuffer<T>::getBuffer() const
 {
    return _bufferPtr;
+}
+
+template <typename T>
+size_t ImageBuffer<T>::getBufferSize() const
+{
+   return _width*_height*3;
 }
 
 template <typename T>
