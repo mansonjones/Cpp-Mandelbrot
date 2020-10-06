@@ -41,6 +41,7 @@ private:
    void sendMessageAtInterval();
 // Add a MessageQueue of AutoSaveJobs here
    std::vector<std::thread> _threads;  // holds all threads that have been launched within this object
+   std::vector<std::thread> _jobThreads; 
    std::shared_ptr<MessageQueue<bool>> _messageQueue;
    WaitingSaveJobs _waitingSaveJobs;
    static std::mutex _mutex;

@@ -81,9 +81,9 @@ wxPanel(parent)
     // _mandelbrotPointer->moveImageBufferHere(std::move(imageBuffer2));
     // _mandelbrotPointer->compute();
     
-    //  _autoSave = new AutoSave(_mandelbrotPointer.get());
-    // _autoSave->runTimerOnThread();
-    // _autoSave->runMonitorOnThread();
+    _autoSave = new AutoSave(_mandelbrotPointer.get());
+    _autoSave->runTimerOnThread();
+    _autoSave->runMonitorOnThread();
     
     // ImageBuffer<unsigned char> testBuffer = _mandelbrotPointer->getImageBuffer2();
 

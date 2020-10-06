@@ -65,30 +65,37 @@ void AutoSave::waitForAutoSaveMessage()
        bool autoSave = _messageQueue->receive();
        
        if (autoSave == true) {
-           std::unique_lock<std::mutex> mylock(_mutex);
            _counter++;
+           std::unique_lock<std::mutex> mylock(_mutex);
            std::string fileName = std::string("autosave_" + std::to_string(_counter) + std::string(".ppm"));
            std::cout << " Save Message Received " << " " << _counter << " " << fileName << std::endl;
-           _mandelbrotPointer->sayHello();
+           // _mandelbrotPointer->sayHello();
            // lock.unlock();
-           std::lock_guard<std::mutex> lock(_mutex);
-           std::promise<std::string> promise;
-           std::future<std::string> future = promise.get_future();
+           // std::lock_guard<std::mutex> lock(_mutex);
+           // std::promise<std::string> promise;
+           // std::future<std::string> future = promise.get_future();
 
            // start thread and pass promise as argument
-           SaveJob saveJob;
-           saveJob.setFileName(fileName);
-           ImageBuffer<unsigned char> temp = _mandelbrotPointer->getImageBuffer2();
-            ImageBuffer<unsigned char> imageBuffer(temp.getWidth(), temp.getHeight());
-            // std::cout << " (width, height) = " << temp.getWidth() << " " << temp.getHeight() << std::endl;
-            BufferEffects::setColor(blue, temp);  
-
-           saveJob.setImageBuffer(/* temp  */ imageBuffer);
-           _threads.emplace_back(std::thread(&AutoSave::saveFile, this, std::move(promise), saveJob));
+           // Need to get the latest buffer from
+           std::shared_ptr<SaveJob> saveJob(new SaveJob);
+           
+           saveJob->setFileName(fileName);
+           saveJob->setFileType(PPM);
+           ImageBuffer<unsigned char> imageBuffer(100,100);
+           BufferEffects::setColor(blue, imageBuffer);
+           saveJob->setImageBuffer(imageBuffer);
+           // ImageBuffer<unsigned char> temp = _mandelbrotPointer->getImageBuffer2();
+            // ImageBuffer<unsigned char> imageBuffer(temp.getWidth(), temp.getHeight());
+            // std::cout << " (width, hei
+            _jobThreads.emplace_back(std::thread(&SaveJob::write, saveJob));
+           // _jobThreads.emplace_back(std::thread(&SaveJob::write, this, std::move(promise), saveJob));
+           _jobThreads.back().join();
            // set the wait
+           /*
             std::for_each(_threads.begin(), _threads.end(), [](std::thread &t) {
                 t.join();
             });
+            */
 
 
            // lock.unlock();
@@ -109,6 +116,7 @@ void AutoSave::launchSaveJobOnThread(std::string fileName)
     saveJob.setImageBuffer(imageBuffer);
     // saveJob.write();
     _threads.emplace_back(std::thread(&AutoSave::saveFile, this, std::move(promise), saveJob));
+    _threads.back().join();
     // _threads.emplace_back(std::thread(&SaveJob::saveFile, this, std::move(promise)));
     std::string returnMessage = future.get();
 }
@@ -123,14 +131,23 @@ void AutoSave::saveFile(std::promise<std::string> && promise, SaveJob saveJob)
 
 void AutoSave::addSaveJobToQueue(std::shared_ptr<SaveJob> saveJob)
 {
+    _threads.emplace_back(std::thread(&SaveJob::write, saveJob));
+    
+    // Create a thread barrier
+    _threads.back().join();
+    /*
     std::unique_lock<std::mutex> lock(_mutex);
     std::cout << " AutoSave::addSaveJobToQueue : thread id = " << std::this_thread::get_id() << std::endl;
     lock.unlock();
 
-    // add new Save Job to the end of the thread queue
+    // add new Save Job to the end of the thread queueh
+    // 
     std::promise<void> promiseSaveJob;
     std::future<void> futureSaveJob = promiseSaveJob.get_future();
     _waitingSaveJobs.pushBack(saveJob, std::move(promiseSaveJob));
+    */
+    // TODO: Not exactly sure how to call the Function in Save Job to write save the file to disk
+    // One possibility is to use the functor, which is called automatically.
 }
 
 void AutoSave::sendMessageAtInterval()
