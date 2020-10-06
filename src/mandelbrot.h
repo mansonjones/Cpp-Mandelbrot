@@ -14,6 +14,7 @@
 class Mandelbrot
 {
 public:
+   Mandelbrot();
    Mandelbrot(float width, float height);
    ~Mandelbrot();
    void write(FileType fileType, std::string fileName);   // this should be improved using the ostream operator

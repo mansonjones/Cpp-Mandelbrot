@@ -20,9 +20,7 @@ class MandelbrotPanel : public wxPanel
 private:
     std::unique_ptr<Mandelbrot> _mandelbrotPointer;
     AutoSave *_autoSave;
-    // Mandelbrot *_mandelbrotPointer;
     wxImage image;
-    wxImage image2;
     wxBitmap resized;
     ImageBuffer<unsigned char> _imageBuffer;
     int w, h;
@@ -34,7 +32,6 @@ public:
     void paintNow();
     void OnSize(wxSizeEvent& event);
     void render(wxDC& dc);
-    void update();
 
     Mandelbrot *getMandelbrotPointer() { return _mandelbrotPointer.get(); }
     void moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer);
@@ -80,6 +77,7 @@ public:
 
     // This should be moved into a separate class.
     ImageBuffer<unsigned char> readFile(FileType type, std::string fileName);
+    
     // This should be moved into a separate class
     void writeFile(FileType type, std::string fileName, ImageBuffer<unsigned char> imageBuffer);
 

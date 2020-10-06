@@ -7,6 +7,8 @@ using namespace std;
 
 #include "mandelbrot.h"
 
+Mandelbrot::Mandelbrot() : _width(0), _height(0) 
+{}
 
 Mandelbrot::Mandelbrot(float width, float height) : _width(width), _height(height) 
 {
@@ -74,6 +76,9 @@ int Mandelbrot::value(int x, int y) {
 
 void Mandelbrot::render(ImageBuffer<unsigned char> &imageBuffer)
 {
+   _width = imageBuffer.getWidth();
+   _height = imageBuffer.getHeight();
+   
    for (int i = 0; i < imageBuffer.getWidth(); i++) {
       for (int j = 0; j < imageBuffer.getHeight(); j++) {
           unsigned char mandelbrotValue = static_cast<unsigned char>(value(i,j)); 

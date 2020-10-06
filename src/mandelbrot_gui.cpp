@@ -75,25 +75,21 @@ wxPanel(parent)
     const int width = Constants::panelWidth;
     const int height = Constants::panelHeight;
 
-    _mandelbrotPointer = std::make_unique<Mandelbrot>(width, height);
-    // _mandelbrotPointer->compute();
-    // _mandelbrotPointer = new Mandelbrot(width, height);
-    // _mandelbrotPointer->moveImageBufferHere(std::move(imageBuffer2));
-    // _mandelbrotPointer->compute();
-    
-    _autoSave = new AutoSave(  this /* _mandelbrotPointer.get() */);
+    _mandelbrotPointer = std::make_unique<Mandelbrot>();
+
+    _autoSave = new AutoSave(this);
     _autoSave->runTimerOnThread();
     _autoSave->runMonitorOnThread();
     
     _imageBuffer = ImageBuffer<unsigned char>(width, height);
-    
+    _mandelbrotPointer->render(_imageBuffer);   
     // For testing
-    BufferEffects::setColor(yellow, _imageBuffer);
-    size_t bufferSize = _mandelbrotPointer->getImageBuffer()->getBufferSize();
+    // BufferEffects::setColor(yellow, _imageBuffer);
+    size_t bufferSize = _imageBuffer.getBufferSize();
     unsigned char *buffer = new unsigned char[bufferSize];
-    buffer = _mandelbrotPointer->getBuffer();
+    buffer = _imageBuffer.getBuffer();
     // 
-    bool imageCreationSuccess = image2.Create( width, height, buffer);
+    bool imageCreationSuccess = image.Create( width, height, buffer);
     if (!imageCreationSuccess) {
         std::cerr << " image creation did not succeed " << std::endl;
     }
@@ -144,15 +140,12 @@ void MandelbrotPanel::render(wxDC&  dc)
     dc.GetSize( &neww, &newh );
     if( neww != w || newh != h )
     {
-        // resized = wxBitmap( image.Scale( neww, newh /*, wxIMAGE_QUALITY_HIGH*/ ) );
-        // resized = wxBitmap( image2.Scale( neww, newh /*, wxIMAGE_QUALITY_HIGH*/ ) );
-        resized = wxBitmap( image2.Scale( neww, newh /* ,  wxIMAGE_QUALITY_HIGH */ ) );
+        resized = wxBitmap( image.Scale( neww, newh /* ,  wxIMAGE_QUALITY_HIGH */ ) );
         w = neww;
         h = newh;
         dc.DrawBitmap( resized, 0, 0, false );
     }else{
-        resized = wxBitmap( image2 );
-        // resized = wxBitmap( image2.Scale( neww, newh , wxIMAGE_QUALITY_HIGH) );
+        resized = wxBitmap( image );
         dc.DrawBitmap( resized, 0, 0, false );
     }
 }
@@ -165,20 +158,6 @@ void MandelbrotPanel::OnSize(wxSizeEvent& event){
     Refresh();
     //skip the event.
     event.Skip();
-}
-
-void MandelbrotPanel::update() {
-    // unsigned char *buffer = _imageBuffer.getBuffer();
-
-    // image2.Create(_imageBuffer.getWidth(), _imageBuffer.getHeight(), buffer);
-
-    // image2.SetData(buffer, _imageBuffer.getWidth(), _imageBuffer.getHeight());
-    //_frame->Show(TRUE);
-    // image2.Create( _imageBuffer.getWidth(), _imageBuffer.getHeight(), buffer);
-    // paintNow();
-    // Refresh();
-    // Update();
-    // Layout();
 }
 
 void MandelbrotPanel::moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer)
@@ -334,7 +313,6 @@ void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
 
             // Use move semantics to copy the buffer into the MandelbrotPanel class
             _mandelbrotPanel->moveImageBufferHere(imageBuffer);
-            _mandelbrotPanel->update();
 
             // Note that at this point tempora
             // ImageBuffer<unsigned char> *tempFoo;
