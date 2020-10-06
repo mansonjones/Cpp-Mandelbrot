@@ -19,7 +19,7 @@ class MandelbrotPanel : public wxPanel
 {
 private:
     std::unique_ptr<Mandelbrot> _mandelbrotPointer;
-    AutoSave *_autoSave;
+    AutoSave *_autoSave;  // eventually make a unique_ptr
     wxImage image;
     wxBitmap resized;
     ImageBuffer<unsigned char> _imageBuffer;
@@ -77,7 +77,7 @@ public:
 
     // This should be moved into a separate class.
     ImageBuffer<unsigned char> readFile(FileType type, std::string fileName);
-    
+
     // This should be moved into a separate class
     void writeFile(FileType type, std::string fileName, ImageBuffer<unsigned char> imageBuffer);
 

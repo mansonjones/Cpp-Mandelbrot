@@ -162,10 +162,21 @@ void MandelbrotPanel::OnSize(wxSizeEvent& event){
 
 void MandelbrotPanel::moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer)
 {
-    _imageBuffer = std::move(imageBuffer);
     w = _imageBuffer.getWidth();
     h = _imageBuffer.getHeight();
-    // debug();
+
+    _imageBuffer = std::move(imageBuffer);
+
+    size_t bufferSize = _imageBuffer.getBufferSize();
+    unsigned char *buffer = new unsigned char[bufferSize];
+    buffer = _imageBuffer.getBuffer();
+    // 
+    bool imageCreationSuccess = image.Create( _imageBuffer.getWidth(), _imageBuffer.getHeight(), buffer);
+    if (!imageCreationSuccess) {
+        std::cerr << " image creation did not succeed " << std::endl;
+    }
+ 
+    Refresh();
 }
 
 void MandelbrotPanel::debug()
@@ -192,15 +203,9 @@ bool MandelbrotApp::OnInit()
     // make sure to call this first
     wxInitAllImageHandlers();
     
-
     _frame = new MainFrame(wxT("Mandelbrot Viewer"), wxPoint(50,50), wxSize(500,500));
     _frame->Show(TRUE);
     SetTopWindow(_frame);
-
-    // Start the AutoSaver
-    // AutoSave *autoSave = new AutoSave();
-    // autoSave->runTimerOnThread();
-    // autoSave->runMonitorOnThread();
     
     return true;
 } 
@@ -287,40 +292,24 @@ void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
     {
         _currentDocPath = OpenDialog->GetPath();
 
+        
         // Sets our current document to the file the user selected
         // MainEditBox->LoadFile(CurrentDocPath); //Opens that file
-        // Set the Title to reflect the  file open
-        SetTitle(wxString("Edit - ") << OpenDialog->GetFilename());
+        // Set the Title to reflect the  file open:
+        _currentFileName = OpenDialog->GetFilename();
+
+        SetTitle(wxString("Edit - ") << _currentFileName);
+
             FileType fileType = PPM;
             _currentFileName = OpenDialog->GetFilename();
-            // Need to fix the API here
-            // Create an Imagebuffer that is red.
-            // Use move semantics to move the buffer into the MandelbrotPanel
-            // Once this works 
-            ImageBuffer<unsigned char> imageBuffer = readFile(PPM, std::string(_currentFileName.mb_str()));
+            
+            ImageBuffer<unsigned char> imageBuffer = readFile(PPM, std::string(_currentDocPath.mb_str()));
             
             // Diagnostic
-            
-            /*
-            for (int i = 0; i < imageBuffer.getWidth(); ++i) {
-                for (int j = 0; j < imageBuffer.getHeight(); ++j) {
-                    imageBuffer.setRed(i,j,(unsigned char)255);
-                    imageBuffer.setGreen(i,j,(unsigned char)0);
-                    imageBuffer.setBlue(i,j,(unsigned char)0);
-                }
-            }
-            */
-
-            // Use move semantics to copy the buffer into the MandelbrotPanel class
+            // BufferEffects::setColor(cyan, imageBuffer);
+        
+            // Use move semantics to copy the image buffer into the MandelbrotPanel class
             _mandelbrotPanel->moveImageBufferHere(imageBuffer);
-
-            // Note that at this point tempora
-            // ImageBuffer<unsigned char> *tempFoo;
-            // ImageIO *imageIO = ImageIO::getImageWriter(fileType, std::string(_currentFileName.mb_str()), tempFoo);
-            // ImageBuffer<unsigned char> *tempBuffer = imageIO->read();
-
-            // Render the image buffer to the panel
-                
     }
 
 }
@@ -446,6 +435,7 @@ ImageBuffer<unsigned char> MainFrame::readFile(FileType type, std::string fileNa
             imageBuffer.setBlue(i,j,static_cast<unsigned char>(blue));
          }
       }
+      fileStream.close();
       return imageBuffer;
    } else {
         ImageBuffer<unsigned char> imageBuffer;
