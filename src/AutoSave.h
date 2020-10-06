@@ -16,19 +16,14 @@
 #include "MessageQueue.h"
 #include "WaitingSaveJobs.h"
 #include "SaveJob.h"
-
-class ImageWriter
-{
-public:
-   static void write1();
-   static void write(std::promise<void> &&promise, std::string fileName);
-};
+// #include "mandelbrot_gui.h"
+class MandelbrotPanel;
 
 class AutoSave
 {
 public:
    AutoSave();
-   AutoSave(Mandelbrot *pointer);
+   AutoSave(MandelbrotPanel *pointer);
    ~AutoSave();
 
    void runTimerOnThread();
@@ -38,16 +33,20 @@ public:
    void saveFile(std::promise<std::string> && promise, SaveJob saveJob);
    void addSaveJobToQueue(std::shared_ptr<SaveJob> saveJob);
 private:
+   static int getCounter();
    void sendMessageAtInterval();
 // Add a MessageQueue of AutoSaveJobs here
    std::vector<std::thread> _threads;  // holds all threads that have been launched within this object
    std::vector<std::thread> _jobThreads; 
-   std::shared_ptr<MessageQueue<bool>> _messageQueue;
+   // std::shared_ptr<MessageQueue<bool>> _messageQueue;
+   std::shared_ptr<MessageQueue<int>> _messageQueue;
    WaitingSaveJobs _waitingSaveJobs;
    static std::mutex _mutex;
    SaveJob _saveJob;
    static unsigned long _counter;
-   Mandelbrot *_mandelbrotPointer;
+   MandelbrotPanel *_mandelbrotPanel;
+   std::vector<std::shared_ptr<SaveJob>> _saveJobs;
+
 
 //
 };

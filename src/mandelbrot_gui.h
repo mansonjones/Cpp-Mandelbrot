@@ -39,6 +39,7 @@ public:
     Mandelbrot *getMandelbrotPointer() { return _mandelbrotPointer.get(); }
     void moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer);
     void debug(); // This should be removed eventually
+    ImageBuffer<unsigned char> getImageBuffer();
 
     // some useful events
     /*
@@ -81,12 +82,13 @@ public:
     ImageBuffer<unsigned char> readFile(FileType type, std::string fileName);
     // This should be moved into a separate class
     void writeFile(FileType type, std::string fileName, ImageBuffer<unsigned char> imageBuffer);
+
+    DECLARE_EVENT_TABLE()
+private:
 // The Path to the file we have open
     wxString _currentDocPath;
     wxString _currentFileName;
 
-    DECLARE_EVENT_TABLE()
-private:
     wxMenuBar *_mainMenu;
     MandelbrotPanel *_mandelbrotPanel;  // should convert to shared pointer
     AutoSave *_autoSave;

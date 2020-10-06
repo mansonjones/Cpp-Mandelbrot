@@ -12,6 +12,7 @@ SaveJob::SaveJob()
 SaveJob::SaveJob(FileType fileType, std::string fileName, ImageBuffer<unsigned char> imageBuffer) :
 _fileType(fileType), _fileName(fileName), _imageBuffer(imageBuffer)
 {}
+
 void SaveJob::setImageBuffer(ImageBuffer<unsigned char> imageBuffer)
 {
     _fileType = PPM;
@@ -54,11 +55,13 @@ void SaveJob::write()
 
         if (outputFileStream.is_open()) {
             outputFileStream << "P3\n" << _width << " " << _height << " 255\n";
+            // std::cout << "***** DEBUG " <<
                 for (int i = 0; i < _width; ++i) {
                     for (int j = 0; j < _height; ++j) {
                         int valRed = getImageBuffer().getRed(i,j);
                         int valGreen = getImageBuffer().getGreen(i,j);
                         int valBlue = getImageBuffer().getBlue(i,j);
+                        // TODO: See if there is any performance difference between these, 
                         std::stringstream stringStream;
                         stringStream << std::to_string(valRed) << " " << std::to_string(valGreen) << " " << std::to_string(valBlue) << "\n";
                         outputFileStream << stringStream.str();

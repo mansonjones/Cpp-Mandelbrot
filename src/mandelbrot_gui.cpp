@@ -81,25 +81,18 @@ wxPanel(parent)
     // _mandelbrotPointer->moveImageBufferHere(std::move(imageBuffer2));
     // _mandelbrotPointer->compute();
     
-    _autoSave = new AutoSave(_mandelbrotPointer.get());
+    _autoSave = new AutoSave(  this /* _mandelbrotPointer.get() */);
     _autoSave->runTimerOnThread();
     _autoSave->runMonitorOnThread();
     
-    // ImageBuffer<unsigned char> testBuffer = _mandelbrotPointer->getImageBuffer2();
-
-    // std::cout << " Debug Mandelbrot " << std::endl;
-    // std::cout << " width " << testBuffer.getWidth() << std::endl;
-    // std::cout << " height " << testBuffer.getHeight() << std::endl;
+    _imageBuffer = ImageBuffer<unsigned char>(width, height);
     
+    // For testing
+    BufferEffects::setColor(yellow, _imageBuffer);
     size_t bufferSize = _mandelbrotPointer->getImageBuffer()->getBufferSize();
     unsigned char *buffer = new unsigned char[bufferSize];
     buffer = _mandelbrotPointer->getBuffer();
-    // i=diagnostic
-    /*
-    for (int i = 0; i < 400*400; i = i+3) {
-        buffer[i] = (unsigned char)0;
-    }
-    */
+    // 
     bool imageCreationSuccess = image2.Create( width, height, buffer);
     if (!imageCreationSuccess) {
         std::cerr << " image creation did not succeed " << std::endl;
@@ -108,12 +101,6 @@ wxPanel(parent)
    // std::string fileName = "output2.ppm";
     
    // ImageIO *imageIO = ImageIO::getImageWriter(fileType, fileName, mandelbrotPointer->getImageBuffer());
-   // imageIO->write();
-    
-    // load the file... ideally add a check to see if loading was successful
-    // image.LoadFile(file, format);
-    // w = -1;
-    // h = -1;
     w = width;
     h = height;
 }
@@ -214,6 +201,11 @@ void MandelbrotPanel::debug()
         }
     }
     
+}
+
+ImageBuffer<unsigned char> MandelbrotPanel::getImageBuffer() 
+{ 
+    return _imageBuffer; 
 }
 
 bool MandelbrotApp::OnInit()

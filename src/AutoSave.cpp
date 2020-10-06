@@ -1,6 +1,7 @@
 #include "AutoSave.h"
 #include "BufferEffects.h"
 #include "ImageIO_PPM.h"
+#include "mandelbrot_gui.h"
 
 #include <chrono>
 
@@ -8,41 +9,25 @@ std::mutex AutoSave::_mutex
 ;
 unsigned long AutoSave::_counter = 0;
 
-void ImageWriter::write(std::promise<void> &&promise, std::string fileName)
-{
-   std::string fileNameTemp = "output1.txt";
-   std::ofstream outputFileStream(fileNameTemp);
-   if (outputFileStream.is_open()) {
-      outputFileStream << "This is the first line" << std::endl;
-   }
-   outputFileStream.close();
-}
-
-void ImageWriter::write1()
-{
-   std::string fileName = "output1.txt";
-   std::ofstream outputFileStream(fileName);
-   if (outputFileStream.is_open()) {
-      outputFileStream << "This is the first line" << std::endl;
-   }
-   outputFileStream.close();
-}
 AutoSave::AutoSave()
 {
   // std::cout << " AutoSave Constructor " << std::endl;
-  _messageQueue = std::make_shared<MessageQueue<bool>>();
+  _messageQueue = std::make_shared<MessageQueue<int>>();
 }
 
-AutoSave::AutoSave(Mandelbrot *mandelbrotPointer) : _mandelbrotPointer(mandelbrotPointer)
+AutoSave::AutoSave(MandelbrotPanel *mandelbrotPanel) : _mandelbrotPanel(mandelbrotPanel)
 {
   // std::cout << " AutoSave Constructor " << std::endl;
-  _messageQueue = std::make_shared<MessageQueue<bool>>();
+  _messageQueue = std::make_shared<MessageQueue<int>>();
 }
 
 AutoSave::~AutoSave()
 {
   // set up thread barrier before this object is destroyed
   std::for_each(_threads.begin(), _threads.end(), [](std::thread &t) {
+     t.join();
+  });
+  std::for_each(_jobThreads.begin(), _jobThreads.end(), [](std::thread &t) {
      t.join();
   });
 }
@@ -62,13 +47,18 @@ void AutoSave::waitForAutoSaveMessage()
    while (true)
    {
        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-       bool autoSave = _messageQueue->receive();
+       int autoSave = _messageQueue->receive();
        
-       if (autoSave == true) {
+       if (autoSave >= 0) {
+           // std::unique_lock<std::mutex> mylock(_mutex);
            _counter++;
-           std::unique_lock<std::mutex> mylock(_mutex);
-           std::string fileName = std::string("autosave_" + std::to_string(_counter) + std::string(".ppm"));
+           // std::unique_lock<std::mutex> myLock(_mutex);
+           std::lock_guard<std::mutex> lock(_mutex);
+           std::string fileName = std::string("autosave_" + std::to_string(autoSave) + std::string(".ppm"));
+           
            std::cout << " Save Message Received " << " " << _counter << " " << fileName << std::endl;
+           std::cout << "auto save number " << autoSave << std::endl;
+           // myLock.unlock();
            // _mandelbrotPointer->sayHello();
            // lock.unlock();
            // std::lock_guard<std::mutex> lock(_mutex);
@@ -81,15 +71,20 @@ void AutoSave::waitForAutoSaveMessage()
            
            saveJob->setFileName(fileName);
            saveJob->setFileType(PPM);
-           ImageBuffer<unsigned char> imageBuffer(100,100);
-           BufferEffects::setColor(blue, imageBuffer);
+           ImageBuffer<unsigned char> imageBuffer = _mandelbrotPanel->getImageBuffer();
+           // ImageBuffer<unsigned char> imageBuffer(400,400);
+           // BufferEffects::setColor(red, imageBuffer);
+           // ImageBuffer<unsigned char> imageBuffer(100,100);
+           // BufferEffects::setColor(blue, imageBuffer);
            saveJob->setImageBuffer(imageBuffer);
            // ImageBuffer<unsigned char> temp = _mandelbrotPointer->getImageBuffer2();
             // ImageBuffer<unsigned char> imageBuffer(temp.getWidth(), temp.getHeight());
             // std::cout << " (width, hei
-            _jobThreads.emplace_back(std::thread(&SaveJob::write, saveJob));
+            // std::lock_guard<std::mutex> lock(_mutex);
+            _threads.emplace_back(std::thread(&SaveJob::write, saveJob));
+            _saveJobs.push_back(saveJob);
            // _jobThreads.emplace_back(std::thread(&SaveJob::write, this, std::move(promise), saveJob));
-           _jobThreads.back().join();
+           _threads.back().join();
            // set the wait
            /*
             std::for_each(_threads.begin(), _threads.end(), [](std::thread &t) {
@@ -154,17 +149,23 @@ void AutoSave::sendMessageAtInterval()
 {
    unsigned int interval = 10000; // milliseconds
 
+    unsigned int counter = 0;
    while (true)
    {
        std::this_thread::sleep_for(std::chrono::milliseconds(interval));
        // std::unique_lock<std::mutex> lock(_mutex);
         std::cout << " Auto Save ... " << std::endl;
         // lock.unlock();
-        bool autoSave = true;
-        _messageQueue->send(std::move(autoSave));
+        // bool autoSave = true;
+        _messageQueue->send(std::move(counter));
+        counter++;
         // std::cout << " Message Queue Size " << _messageQueue->size() << std::endl;
          // I could write the output here
          // Question: should mutex be used for console messages?
    }
 }
 
+int AutoSave::getCounter()
+{
+    return _counter;
+}
