@@ -4,7 +4,8 @@
 
 #include <chrono>
 
-std::mutex AutoSave::_mutex;
+std::mutex AutoSave::_mutex
+;
 unsigned long AutoSave::_counter = 0;
 
 void ImageWriter::write(std::promise<void> &&promise, std::string fileName)
@@ -118,6 +119,18 @@ void AutoSave::saveFile(std::promise<std::string> && promise, SaveJob saveJob)
     // ImageIO_PPM::writeTest(saveJob.getFileName(), saveJob.getImageBuffer());
     saveJob.write();
 
+}
+
+void AutoSave::addSaveJobToQueue(std::shared_ptr<SaveJob> saveJob)
+{
+    std::unique_lock<std::mutex> lock(_mutex);
+    std::cout << " AutoSave::addSaveJobToQueue : thread id = " << std::this_thread::get_id() << std::endl;
+    lock.unlock();
+
+    // add new Save Job to the end of the thread queue
+    std::promise<void> promiseSaveJob;
+    std::future<void> futureSaveJob = promiseSaveJob.get_future();
+    _waitingSaveJobs.pushBack(saveJob, std::move(promiseSaveJob));
 }
 
 void AutoSave::sendMessageAtInterval()

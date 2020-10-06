@@ -12,13 +12,14 @@ int WaitingSaveJobs::getSize()
     return _saveJobs.size(); 
 }
 
-void WaitingSaveJobs::pushBack(SaveJob saveJob, std::promise<void> &&promise)
+void WaitingSaveJobs::pushBack(std::shared_ptr<SaveJob> saveJob, std::promise<void> &&promise)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     _saveJobs.push_back(saveJob);
     _promises.push_back(std::move(promise));
 }
 
+/*
 SaveJob WaitingSaveJobs::popBack()
 {
     // perform vector modification under the lock
@@ -29,6 +30,7 @@ SaveJob WaitingSaveJobs::popBack()
     _saveJobs.pop_back();
     return v;
 }
+*/
 void WaitingSaveJobs::runFirstJobInQueue() 
 {
     std::lock_guard<std::mutex> lock(_mutex);

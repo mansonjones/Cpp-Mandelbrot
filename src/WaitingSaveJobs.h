@@ -13,11 +13,11 @@ class WaitingSaveJobs
 public:
     WaitingSaveJobs();
     int getSize();
-    SaveJob popBack();
-    void pushBack(SaveJob saveJob, std::promise<void> &&promise);
+    // SaveJob popBack();
+    void pushBack(std::shared_ptr<SaveJob> saveJob, std::promise<void> &&promise);
     void runFirstJobInQueue();
 private:
-    std::vector<SaveJob> _saveJobs;
+    std::vector<std::shared_ptr<SaveJob>> _saveJobs;
     std::vector<std::promise<void>> _promises;
     std::mutex _mutex;
     int _numberOfSaveJobs;

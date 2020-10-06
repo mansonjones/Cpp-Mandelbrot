@@ -10,6 +10,7 @@
 #include <future>
 #include <mutex>
 #include <random>
+#include <memory>
 
 #include "mandelbrot.h"
 #include "MessageQueue.h"
@@ -35,6 +36,7 @@ public:
    void waitForAutoSaveMessage();
    void launchSaveJobOnThread(std::string fileName);
    void saveFile(std::promise<std::string> && promise, SaveJob saveJob);
+   void addSaveJobToQueue(std::shared_ptr<SaveJob> saveJob);
 private:
    void sendMessageAtInterval();
 // Add a MessageQueue of AutoSaveJobs here
