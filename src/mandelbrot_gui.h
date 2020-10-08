@@ -39,6 +39,7 @@ public:
     void debug(); // This should be removed eventually
     ImageBuffer<unsigned char> getImageBuffer();
 
+    void recomputeMandelbrot();
     // some useful events
     /*
      void mouseMoved(wxMouseEvent& event);
@@ -74,6 +75,10 @@ public:
     void SaveFileAs( wxCommandEvent& event );
     void CloseFile( wxCommandEvent& event );
 
+    void SliderX(wxCommandEvent& event);
+    void SliderY(wxCommandEvent& event);
+    void Scale(wxCommandEvent& event);
+
     MandelbrotPanel *getMandelbrotPanel() { return _mandelbrotPanel; }
 
     // This should be moved into a separate class.
@@ -94,6 +99,10 @@ private:
     std::thread _saveThread;
     std::shared_ptr<SaveJob> _saveJob;
     std::vector<std::shared_ptr<SaveJob>> _saveJobs;
+
+    wxSlider *_sliderX;
+    wxSlider *_sliderY;
+    wxSlider *_scale;
     
 };
 
@@ -106,7 +115,10 @@ enum
         MENU_Close,
         MENU_Save,
         MENU_SaveAs,
-        MENU_Quit
+        MENU_Quit,
+        SLIDER_X,
+        SLIDER_Y,
+        SCALE
 };
 
 

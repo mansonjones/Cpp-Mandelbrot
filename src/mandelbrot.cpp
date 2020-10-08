@@ -40,8 +40,15 @@ ImageBuffer<unsigned char> *Mandelbrot::getImageBuffer()
 }
 
 int Mandelbrot::value(int x, int y) {
-  complex<float> point(((float)x + _xOffset)/_width - 1.5, ((float)y + _yOffset) / _height - 0.5);
+  // complex<float> point((float)x/_width - 1.5, (float)y/_height - 0.5);
+  float xValue = ((float)x + _xOffset)/_width - 1.5;
+  float yValue = ((float)y + _yOffset)/_height - 0.5;
+  // float xValue = (float)x/_width - 1.5 + _xOffset;
+  // float yValue = (float)y/_height - 0.5 + _yOffset;
+  complex<float> point(xValue, yValue);
   point = _scale*point;
+  // complex<float> point(float)x/_width - 1.5, (float)y + _yOffset / - 0.5);
+  // point = _scale*point;
   // we divide by the image dimensions to get values smaller than 1
   // then apply a translation
   complex<float> z(0,0);

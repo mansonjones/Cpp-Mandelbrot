@@ -32,6 +32,9 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
         EVT_MENU(MENU_Save, MainFrame::SaveFile)
         EVT_MENU(MENU_SaveAs, MainFrame::SaveFileAs)
         EVT_MENU(MENU_Quit, MainFrame::Quit)
+        EVT_SLIDER(SLIDER_X, MainFrame::SliderX)
+        EVT_SLIDER(SLIDER_Y, MainFrame::SliderY)
+        EVT_SLIDER(SCALE, MainFrame::Scale)
 END_EVENT_TABLE()
 
 
@@ -76,13 +79,13 @@ wxPanel(parent)
     const int height = Constants::panelHeight;
 
     _mandelbrotPointer = std::make_unique<Mandelbrot>();
-    _mandelbrotPointer->setOffsets(100.0,-100.0);
+    _mandelbrotPointer->setOffsets(0,0);
     _mandelbrotPointer->setScale(1);
 
-    _autoSave = new AutoSave(this);
-    _autoSave->runTimerOnThread();
-    _autoSave->runMonitorOnThread();
-    _autoSave->saveJobPollingLoop();
+    // _autoSave = new AutoSave(this);
+    // _autoSave->runTimerOnThread();
+    // _autoSave->runMonitorOnThread();
+    // _autoSave->saveJobPollingLoop();
     
     _imageBuffer = ImageBuffer<unsigned char>(width, height);
     _mandelbrotPointer->render(_imageBuffer);   
@@ -207,6 +210,24 @@ ImageBuffer<unsigned char> MandelbrotPanel::getImageBuffer()
     return _imageBuffer; 
 }
 
+void MandelbrotPanel::recomputeMandelbrot()
+{
+    int width = _imageBuffer.getWidth();
+    int height = _imageBuffer.getHeight();
+
+     _mandelbrotPointer->render(_imageBuffer);   
+    // For testing
+    // BufferEffects::setColor(yellow, _imageBuffer);
+    size_t bufferSize = _imageBuffer.getBufferSize();
+    unsigned char *rawBuffer = new unsigned char[bufferSize];
+    rawBuffer = _imageBuffer.getBuffer();
+    // 
+    bool imageCreationSuccess = image.Create( width, height, rawBuffer);
+    if (!imageCreationSuccess) {
+        std::cerr << " image creation did not succeed " << std::endl;
+    }
+    Refresh();
+}
 bool MandelbrotApp::OnInit()
 {
     // make sure to call this first
@@ -257,6 +278,28 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& position, const wxSiz
         _currentDocPath = ::wxGetCwd();
         _currentFileName = wxString(Constants::defaultFileName);
         SetTitle(_currentFileName);
+
+        _sliderX = new wxSlider(this, SLIDER_X, 0, Constants::sliderXMinimum, Constants::sliderXMaximum, wxDefaultPosition, wxDefaultSize, wxSL_LABELS);
+        _sliderX->SetBackgroundColour(wxColour(77,77,77));
+        _sliderY = new wxSlider(this, SLIDER_Y, 0, Constants::sliderYMinimum, Constants::sliderYMaximum, wxDefaultPosition, wxDefaultSize, wxSL_LABELS);
+        _sliderY->SetBackgroundColour(wxColour(77,77,77));
+
+        // _sliderX->SetLineSize(5);
+
+        _scale = new wxSlider(this, SCALE, Constants::scaleDefault, Constants::scaleMinimum, Constants::scaleMaximum, wxDefaultPosition, wxDefaultSize, wxSL_LABELS);
+        _scale->SetBackgroundColour(wxColour(77,77,77));
+
+        wxBoxSizer *vBoxSizer = new wxBoxSizer(wxVERTICAL);
+        vBoxSizer->Add(_mandelbrotPanel, 1, wxEXPAND);
+        vBoxSizer->Add(_sliderX);
+        vBoxSizer->Add(_sliderY);
+        vBoxSizer->Add(_scale);
+
+        this->SetBackgroundColour(wxColour(77,77,77));
+
+        this->SetSizer(vBoxSizer);
+
+
 
     // Maximize();  // Maximize the window
 
@@ -414,6 +457,31 @@ void MainFrame::SaveFileAs(wxCommandEvent& WXUNUSED(event))
 void MainFrame::Quit(wxCommandEvent& WXUNUSED(event))
 {
     Close(TRUE); // Close the window
+}
+
+void MainFrame::SliderX(wxCommandEvent& event)
+{
+    auto xOffset = _sliderX->GetValue();
+    std::cout << "slider x " << xOffset << std::endl;
+    _mandelbrotPanel->getMandelbrotPointer()->setOffsets(xOffset, 0);
+    _mandelbrotPanel->recomputeMandelbrot();
+}
+
+
+void MainFrame::SliderY(wxCommandEvent& event)
+{
+    auto yOffset = _sliderY->GetValue();
+    std::cout << "slider y " << yOffset << std::endl;
+    _mandelbrotPanel->getMandelbrotPointer()->setOffsets(0, yOffset);
+    _mandelbrotPanel->recomputeMandelbrot();
+}
+
+void MainFrame::Scale(wxCommandEvent& event)
+{
+    auto scale = _scale->GetValue()/1000.0;
+    std::cout << " scale " << scale << std::endl;
+    _mandelbrotPanel->getMandelbrotPointer()->setScale(scale);
+    _mandelbrotPanel->recomputeMandelbrot();
 }
 
 // TODO: Move this function into the IO class
