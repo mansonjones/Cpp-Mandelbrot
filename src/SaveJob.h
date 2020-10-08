@@ -6,8 +6,35 @@
 
 #include <string>
 #include <mutex>
+#include <fstream>
 
-class SaveJob 
+// See https://stackoverflow.com/questions/2159713/overloading-output-operator-for-a-class-template-in-a-namespace
+
+/*
+class thread_safe_ofstream
+{
+public:
+    std::mutex mu;
+    std::ofstream stream;
+
+    
+    // template<typename T>
+    void put(const T& thing) {
+        std::lock_guard<std::mutex> lock(mu);
+        stream << thing;
+    }
+    
+    
+    friend template<typename T> thread_safe_ofstream &operator<<(thread_safe_ofstream& tsof, const T& value) {
+        tsof.put(value);
+        return tsof;
+    }
+
+
+};
+*/
+
+class SaveJob : public std::enable_shared_from_this<SaveJob>
 {
 public:
     SaveJob();

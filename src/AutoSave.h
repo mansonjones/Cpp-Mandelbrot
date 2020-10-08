@@ -32,6 +32,11 @@ public:
    void launchSaveJobOnThread(std::string fileName);
    void saveFile(std::promise<std::string> && promise, SaveJob saveJob);
    void addSaveJobToQueue(std::shared_ptr<SaveJob> saveJob);
+   void saveJobPollingLoop();
+   void processSaveJobQueue();
+   void monitorAutoSaveMessages();
+   bool getSaveState() const { return _saveState; }
+   int messageQueueSize() { return _messageQueue->size(); }
 private:
    static int getCounter();
    void sendMessageAtInterval();
@@ -46,6 +51,7 @@ private:
    static unsigned long _counter;
    MandelbrotPanel *_mandelbrotPanel;
    std::vector<std::shared_ptr<SaveJob>> _saveJobs;
+   bool _saveState;
 
 
 //

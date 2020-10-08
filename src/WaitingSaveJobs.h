@@ -15,12 +15,12 @@ public:
     int getSize();
     // SaveJob popBack();
     void pushBack(std::shared_ptr<SaveJob> saveJob, std::promise<void> &&promise);
-    void runFirstJobInQueue();
+    void permitEntryToFirstInQueue();
 private:
     std::vector<std::shared_ptr<SaveJob>> _saveJobs;
-    std::vector<std::promise<void>> _promises;
+    std::vector<std::promise<void>> _promises;   
     std::mutex _mutex;
-    int _numberOfSaveJobs;
+    // int _numberOfSaveJobs;
 };
 
 #endif // WAITING_SAVE_JOBS_H_

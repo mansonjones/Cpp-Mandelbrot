@@ -63,15 +63,15 @@ void SaveJob::write()
                         int valBlue = getImageBuffer().getBlue(i,j);
                         // TODO: See if there is any performance difference between these, 
                         std::stringstream stringStream;
-                        stringStream << std::to_string(valRed) << " " << std::to_string(valGreen) << " " << std::to_string(valBlue) << "\n";
+                        stringStream << 255 << " " << 0 << " " << 0 << "\n";
                         outputFileStream << stringStream.str();
-                        // outputFileStream << valRed << " " << valGreen << " " << valBlue << "\n";
-                        outputFileStream.flush();
+                        // outputFileStream << 0 << " " << 255 << " " << 0 << "\n";
+                        // outputFileStream.flush();
                     }
                 }
+            outputFileStream.close();
         }
-        outputFileStream.close();
-        // ioLock.unlock();
+    // ioLock.unlock();
         // std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     } else {
         std::cout << " unable to open file " << std::endl;

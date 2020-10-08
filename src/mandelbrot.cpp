@@ -7,7 +7,7 @@ using namespace std;
 
 #include "mandelbrot.h"
 
-Mandelbrot::Mandelbrot() : _width(0), _height(0) 
+Mandelbrot::Mandelbrot() : _width(0), _height(0), _xOffset(0), _yOffset(0), _scale(1.0)
 {}
 
 Mandelbrot::Mandelbrot(float width, float height) : _width(width), _height(height) 
@@ -23,18 +23,6 @@ Mandelbrot::Mandelbrot(float width, float height) : _width(width), _height(heigh
    }
 }
 
-void Mandelbrot::compute() 
-{
-   for (int i = 0; i < _width; i++) {
-      for (int j = 0; j < _height; j++) {
-         unsigned char foo = static_cast<unsigned char>(value(i,j)); 
-         _imageBuffer2.setRed( i, j, foo); 
-         _imageBuffer2.setGreen( i, j, foo); 
-         _imageBuffer2.setBlue( i, j, foo); 
-      }
-   }
-}
-
 Mandelbrot::~Mandelbrot()
 {
    delete _imageBuffer;
@@ -46,22 +34,14 @@ unsigned char *Mandelbrot::getBuffer()
    return _imageBuffer->getBuffer();
 }
 
-ImageBuffer<unsigned char> Mandelbrot::getImageBuffer2() 
-{
-   /*
-   ImageBuffer<unsigned char> imageBuffer = std::move(_imageBuffer2);
-   return imageBuffer;
-   */
-  return _imageBuffer2;
-}
-
 ImageBuffer<unsigned char> *Mandelbrot::getImageBuffer() 
 {
    return _imageBuffer;
 }
 
 int Mandelbrot::value(int x, int y) {
-  complex<float> point((float)x/_width - 1.5, (float)y / _height - 0.5);
+  complex<float> point(((float)x + _xOffset)/_width - 1.5, ((float)y + _yOffset) / _height - 0.5);
+  point = _scale*point;
   // we divide by the image dimensions to get values smaller than 1
   // then apply a translation
   complex<float> z(0,0);
@@ -78,7 +58,7 @@ void Mandelbrot::render(ImageBuffer<unsigned char> &imageBuffer)
 {
    _width = imageBuffer.getWidth();
    _height = imageBuffer.getHeight();
-   
+
    for (int i = 0; i < imageBuffer.getWidth(); i++) {
       for (int j = 0; j < imageBuffer.getHeight(); j++) {
           unsigned char mandelbrotValue = static_cast<unsigned char>(value(i,j)); 
@@ -93,4 +73,15 @@ void Mandelbrot::render(ImageBuffer<unsigned char> &imageBuffer)
 void Mandelbrot::write(FileType fileType, std::string fileName) 
 {  
    ImageIO::getImageWriter(fileType, fileName, _imageBuffer)->write();
+}
+
+void Mandelbrot::setOffsets(float xOffset, float yOffset)
+{
+   _xOffset = xOffset;
+   _yOffset = yOffset;
+}
+
+void Mandelbrot::setScale(float scale)
+{
+   _scale = scale;
 }

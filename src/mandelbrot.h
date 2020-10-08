@@ -20,20 +20,22 @@ public:
    void write(FileType fileType, std::string fileName);   // this should be improved using the ostream operator
    unsigned char *getBuffer();
    ImageBuffer<unsigned char> *getImageBuffer();
-   // Move Semantics
-   ImageBuffer<unsigned char> getImageBuffer2();
    
    void render(ImageBuffer<unsigned char> &imageBuffer);  // This could be turned into a static function
-   void compute();
+
    void sayHello() { std::cout << " Mandelbrot Say Hello " << std::endl; }
    // This function should eventually be moved into the IO class;
    
+   void setOffsets(float xOffset, float yOffset);
+   void setScale(float scale);
 private:
    int value(int x, int y); 
    float _width;
    float _height;
+   float _xOffset;
+   float _yOffset;
+   float _scale;
    ImageBuffer<unsigned char> *_imageBuffer;
-   ImageBuffer<unsigned char> _imageBuffer2;
    
 };
 

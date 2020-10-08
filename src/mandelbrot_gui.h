@@ -27,6 +27,7 @@ private:
     
 public:
     MandelbrotPanel(wxFrame* parent, wxString file, wxBitmapType format);
+    ~MandelbrotPanel(); 
     
     void paintEvent(wxPaintEvent & evt);
     void paintNow();
@@ -92,6 +93,8 @@ private:
     AutoSave *_autoSave;
     std::thread _saveThread;
     std::shared_ptr<SaveJob> _saveJob;
+    std::vector<std::shared_ptr<SaveJob>> _saveJobs;
+    
 };
 
 enum

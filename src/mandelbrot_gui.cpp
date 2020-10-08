@@ -76,20 +76,23 @@ wxPanel(parent)
     const int height = Constants::panelHeight;
 
     _mandelbrotPointer = std::make_unique<Mandelbrot>();
+    _mandelbrotPointer->setOffsets(100.0,-100.0);
+    _mandelbrotPointer->setScale(1);
 
     _autoSave = new AutoSave(this);
     _autoSave->runTimerOnThread();
     _autoSave->runMonitorOnThread();
+    _autoSave->saveJobPollingLoop();
     
     _imageBuffer = ImageBuffer<unsigned char>(width, height);
     _mandelbrotPointer->render(_imageBuffer);   
     // For testing
     // BufferEffects::setColor(yellow, _imageBuffer);
     size_t bufferSize = _imageBuffer.getBufferSize();
-    unsigned char *buffer = new unsigned char[bufferSize];
-    buffer = _imageBuffer.getBuffer();
+    unsigned char *rawBuffer = new unsigned char[bufferSize];
+    rawBuffer = _imageBuffer.getBuffer();
     // 
-    bool imageCreationSuccess = image.Create( width, height, buffer);
+    bool imageCreationSuccess = image.Create( width, height, rawBuffer);
     if (!imageCreationSuccess) {
         std::cerr << " image creation did not succeed " << std::endl;
     }
@@ -99,6 +102,12 @@ wxPanel(parent)
    // ImageIO *imageIO = ImageIO::getImageWriter(fileType, fileName, mandelbrotPointer->getImageBuffer());
     w = width;
     h = height;
+}
+
+MandelbrotPanel::~MandelbrotPanel()
+{ 
+    std::cout << " destructor " << std::endl; 
+    std::cout << " message queue size = " << _autoSave->messageQueueSize() << std::endl;
 }
 
 /*
@@ -290,27 +299,25 @@ void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
     // Creates a "open file" dialog with 1 file types
     if (OpenDialog->ShowModal() == wxID_OK) // if the user click "Open" instead of "cancel"
     {
-        _currentDocPath = OpenDialog->GetPath();
-
-        
         // Sets our current document to the file the user selected
         // MainEditBox->LoadFile(CurrentDocPath); //Opens that file
         // Set the Title to reflect the  file open:
+        _currentDocPath = OpenDialog->GetPath();
         _currentFileName = OpenDialog->GetFilename();
 
         SetTitle(wxString("Edit - ") << _currentFileName);
 
-            FileType fileType = PPM;
-            _currentFileName = OpenDialog->GetFilename();
+        FileType fileType = PPM;
             
-            ImageBuffer<unsigned char> imageBuffer = readFile(PPM, std::string(_currentDocPath.mb_str()));
+        ImageBuffer<unsigned char> imageBuffer = readFile(PPM, std::string(_currentDocPath.mb_str()));
             
-            // Diagnostic
-            // BufferEffects::setColor(cyan, imageBuffer);
+        // Diagnostic
+        // BufferEffects::setColor(cyan, imageBuffer);
         
             // Use move semantics to copy the image buffer into the MandelbrotPanel class
             _mandelbrotPanel->moveImageBufferHere(imageBuffer);
     }
+    OpenDialog->Destroy();
 
 }
 
@@ -344,14 +351,21 @@ void MainFrame::SaveFile(wxCommandEvent& WXUNUSED(event))
 
     BufferEffects::setColor(green, imageBuffer);
 
-    _saveJob = std::make_shared<SaveJob>();
+    std::shared_ptr<SaveJob> saveJob(new SaveJob);
     // SaveJob saveJob;
-    _saveJob->setFileName(std::string(_currentFileName.mb_str()));
-    _saveJob->setFileType(PPM);
-    _saveJob->setImageBuffer(imageBuffer);
+    std::cout << " path " << _currentDocPath << std::endl;
+    std::cout << " file " << _currentFileName << std::endl;
+
+    std::string fullyQualified = std::string(_currentDocPath.mb_str()) + "/" + std::string(_currentFileName.mb_str());
+    std::cout << "fully qualified " << fullyQualified << std::endl;
+    saveJob->setFileName(fullyQualified);
+    saveJob->setFileType(PPM);
+    saveJob->setImageBuffer(imageBuffer);
+    saveJob->write();
+    _saveJobs.push_back(saveJob);
     // Create a thread and call the write function
-    _saveThread = std::thread(&SaveJob::write, _saveJob);
-    _saveThread.join();
+    // _saveThread = std::thread(&SaveJob::write, saveJob);
+    // _saveThread.join();
     // std::thread t(&)
     // saveJob.write();
     // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
