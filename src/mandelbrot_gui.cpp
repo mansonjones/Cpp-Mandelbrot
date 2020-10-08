@@ -291,10 +291,23 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& position, const wxSiz
 
         wxBoxSizer *vBoxSizer = new wxBoxSizer(wxVERTICAL);
         vBoxSizer->Add(_mandelbrotPanel, 1, wxEXPAND);
-        vBoxSizer->Add(_sliderX);
-        vBoxSizer->Add(_sliderY);
-        vBoxSizer->Add(_scale);
+        wxBoxSizer *sliderXBoxSizer = new wxBoxSizer(wxHORIZONTAL);
+        
+        sliderXBoxSizer->Add(new wxStaticText(this,wxID_ANY,_("y Offset ")),0,wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL);
+        sliderXBoxSizer->Add(_sliderX);
+        wxBoxSizer *sliderYBoxSizer = new wxBoxSizer(wxHORIZONTAL);
+        
+        sliderYBoxSizer->Add(new wxStaticText(this,wxID_ANY,_("x Offset ")),0,wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL);
+        sliderYBoxSizer->Add(_sliderY);
+        
+        // vBoxSizer->Add(_sliderY);
+        wxBoxSizer *scaleBoxSizer = new wxBoxSizer(wxHORIZONTAL);
+        scaleBoxSizer->Add(new wxStaticText(this,wxID_ANY,_("Scale")),0,wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL);
+        scaleBoxSizer->Add(_scale);
 
+        vBoxSizer->Add(sliderXBoxSizer);
+        vBoxSizer->Add(sliderYBoxSizer);
+        vBoxSizer->Add(scaleBoxSizer);
         this->SetBackgroundColour(wxColour(77,77,77));
 
         this->SetSizer(vBoxSizer);
