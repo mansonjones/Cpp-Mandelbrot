@@ -82,9 +82,9 @@ wxPanel(parent)
     _mandelbrotPointer->setOffsets(0,0);
     _mandelbrotPointer->setScale(1);
 
-    // _autoSave = new AutoSave(this);
-    // _autoSave->runTimerOnThread();
-    // _autoSave->runMonitorOnThread();
+    _autoSave = new AutoSave(this);
+    _autoSave->runTimerOnThread();
+    _autoSave->runMonitorOnThread();
     // _autoSave->saveJobPollingLoop();
     
     _imageBuffer = ImageBuffer<unsigned char>(width, height);
@@ -109,8 +109,6 @@ wxPanel(parent)
 
 MandelbrotPanel::~MandelbrotPanel()
 { 
-    std::cout << " destructor " << std::endl; 
-    std::cout << " message queue size = " << _autoSave->messageQueueSize() << std::endl;
 }
 
 /*
@@ -193,8 +191,6 @@ void MandelbrotPanel::moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer
 
 void MandelbrotPanel::debug()
 {
-    std::cout << " width = " << _imageBuffer.getWidth() << std::endl;
-    std::cout << " height = " << _imageBuffer.getHeight() << std::endl;
     int counter = 0;
     for (int i = 0; i < _imageBuffer.getWidth(); i++) {
         for (int j = 0; j < _imageBuffer.getHeight(); j++) {
@@ -302,7 +298,7 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& position, const wxSiz
         
         // vBoxSizer->Add(_sliderY);
         wxBoxSizer *scaleBoxSizer = new wxBoxSizer(wxHORIZONTAL);
-        scaleBoxSizer->Add(new wxStaticText(this,wxID_ANY,_("Scale")),0,wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL);
+        scaleBoxSizer->Add(new wxStaticText(this,wxID_ANY,_("Scale")),0,wxALIGN_LEFT /* |wxALIGN_CENTER_VERTICAL */);
         scaleBoxSizer->Add(_scale);
 
         vBoxSizer->Add(sliderXBoxSizer);
@@ -311,6 +307,8 @@ MainFrame::MainFrame(const wxString& title, const wxPoint& position, const wxSiz
         this->SetBackgroundColour(wxColour(77,77,77));
 
         this->SetSizer(vBoxSizer);
+
+        this->SetStatusText(wxString("Elapsed time : 0:00"));
 
 
 
@@ -409,11 +407,8 @@ void MainFrame::SaveFile(wxCommandEvent& WXUNUSED(event))
 
     std::shared_ptr<SaveJob> saveJob(new SaveJob);
     // SaveJob saveJob;
-    std::cout << " path " << _currentDocPath << std::endl;
-    std::cout << " file " << _currentFileName << std::endl;
 
     std::string fullyQualified = std::string(_currentDocPath.mb_str()) + "/" + std::string(_currentFileName.mb_str());
-    std::cout << "fully qualified " << fullyQualified << std::endl;
     saveJob->setFileName(fullyQualified);
     saveJob->setFileType(PPM);
     saveJob->setImageBuffer(imageBuffer);
@@ -475,7 +470,6 @@ void MainFrame::Quit(wxCommandEvent& WXUNUSED(event))
 void MainFrame::SliderX(wxCommandEvent& event)
 {
     auto xOffset = _sliderX->GetValue();
-    std::cout << "slider x " << xOffset << std::endl;
     _mandelbrotPanel->getMandelbrotPointer()->setOffsets(xOffset, 0);
     _mandelbrotPanel->recomputeMandelbrot();
 }
@@ -484,7 +478,6 @@ void MainFrame::SliderX(wxCommandEvent& event)
 void MainFrame::SliderY(wxCommandEvent& event)
 {
     auto yOffset = _sliderY->GetValue();
-    std::cout << "slider y " << yOffset << std::endl;
     _mandelbrotPanel->getMandelbrotPointer()->setOffsets(0, yOffset);
     _mandelbrotPanel->recomputeMandelbrot();
 }
@@ -492,7 +485,6 @@ void MainFrame::SliderY(wxCommandEvent& event)
 void MainFrame::Scale(wxCommandEvent& event)
 {
     auto scale = _scale->GetValue()/1000.0;
-    std::cout << " scale " << scale << std::endl;
     _mandelbrotPanel->getMandelbrotPointer()->setScale(scale);
     _mandelbrotPanel->recomputeMandelbrot();
 }

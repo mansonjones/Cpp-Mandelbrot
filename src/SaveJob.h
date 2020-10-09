@@ -39,6 +39,20 @@ class SaveJob : public std::enable_shared_from_this<SaveJob>
 public:
     SaveJob();
     SaveJob(FileType fileType, std::string fileName, ImageBuffer<unsigned char> imageBuffer);
+    ~SaveJob();
+
+    // Copy Constructor
+    SaveJob(const SaveJob& source);
+
+    // Copy Assignment Operator
+    SaveJob &operator = (const SaveJob &source);
+
+    // Move Constructor
+    SaveJob(SaveJob &&source);
+
+    // Move Assignment Operator
+    SaveJob &operator = (SaveJob &&source);
+
     void setFileType(FileType fileType);
     void setImageBuffer(ImageBuffer<unsigned char> imageBuffer);
     void setFileName(std::string fileName);

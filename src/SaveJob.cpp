@@ -13,6 +13,49 @@ SaveJob::SaveJob(FileType fileType, std::string fileName, ImageBuffer<unsigned c
 _fileType(fileType), _fileName(fileName), _imageBuffer(imageBuffer)
 {}
 
+SaveJob::~SaveJob()
+{}
+
+// Copy Constructor
+SaveJob::SaveJob(const SaveJob& source) :
+    _fileType(source._fileType),
+    _fileName(source._fileName),
+    _imageBuffer(source._imageBuffer)
+{}
+
+// Copy Assignment Operator
+SaveJob &SaveJob::operator = (const SaveJob &source)
+{
+    if (this == &source) {
+        return *this;
+    }
+    _fileType = source._fileType;
+    _fileName = source._fileName;
+    _imageBuffer = source._imageBuffer;
+
+    return *this;
+}
+
+// Move Constructor
+SaveJob::SaveJob(SaveJob &&source) :
+    _fileType(source._fileType),
+    _fileName(source._fileName),
+    _imageBuffer(source._imageBuffer)
+{}
+
+// Move Assignment Operator
+SaveJob &SaveJob::operator = (SaveJob &&source)
+{
+    if (this == &source) {
+        return *this;
+    }
+    _fileType = source._fileType;
+    _fileName = source._fileName;
+    _imageBuffer = source._imageBuffer;
+
+    return *this;
+}
+
 void SaveJob::setImageBuffer(ImageBuffer<unsigned char> imageBuffer)
 {
     _fileType = PPM;
@@ -55,7 +98,6 @@ void SaveJob::write()
 
         if (outputFileStream.is_open()) {
             outputFileStream << "P3\n" << _width << " " << _height << " 255\n";
-            // std::cout << "***** DEBUG " <<
                 for (int i = 0; i < _width; ++i) {
                     for (int j = 0; j < _height; ++j) {
                         int valRed = getImageBuffer().getRed(i,j);
@@ -84,7 +126,6 @@ void SaveJob::operator()()
     // Need to figure out how to use mutex to lock the
     // output file stream object
     // TODO: Use mutex to lock the output file stream
-    std::cout << " SaveJob function operator " << std::endl;
     std::ofstream outputFileStream(_fileName);
     if (outputFileStream.is_open()) {
         outputFileStream << " Using the SaveJob call operator " << std::endl;

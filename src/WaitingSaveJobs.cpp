@@ -15,7 +15,7 @@ int WaitingSaveJobs::getSize()
 void WaitingSaveJobs::pushBack(std::shared_ptr<SaveJob> saveJob, std::promise<void> &&promise)
 {
     std::lock_guard<std::mutex> lock(_mutex);
-
+    // saveJob->write();  // Not sure if this is the right thing to do.
     _saveJobs.push_back(saveJob);
     _promises.push_back(std::move(promise));
 }
