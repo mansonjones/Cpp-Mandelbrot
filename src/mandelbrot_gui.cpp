@@ -83,7 +83,7 @@ wxPanel(parent)
     _mandelbrotPointer->setScale(1);
 
     _autoSave = new AutoSave(this);
-    _autoSave->runSaveMessagesThread();
+    // _autoSave->runSaveMessagesThread();
     // _autoSave->runTimerOnThread();
     // _autoSave->runMonitorOnThread();
     // _autoSave->saveJobPollingLoop();
@@ -402,19 +402,20 @@ void MainFrame::SaveFile(wxCommandEvent& WXUNUSED(event))
 
     // Start the thread and pass the promise as an argument
     // 
-    ImageBuffer<unsigned char> imageBuffer(200,200);
+    // ImageBuffer<unsigned char> imageBuffer(200,200);
 
-    BufferEffects::setColor(green, imageBuffer);
+    // BufferEffects::setColor(green, imageBuffer);
 
-    std::shared_ptr<SaveJob> saveJob(new SaveJob);
+    std::shared_ptr<SaveJob> saveJob = std::make_shared<SaveJob>();
     // SaveJob saveJob;
+    ImageBuffer<unsigned char> imageBuffer = getMandelbrotPanel()->getImageBuffer();
 
     std::string fullyQualified = std::string(_currentDocPath.mb_str()) + "/" + std::string(_currentFileName.mb_str());
     saveJob->setFileName(fullyQualified);
     saveJob->setFileType(PPM);
     saveJob->setImageBuffer(imageBuffer);
     saveJob->write();
-    _saveJobs.push_back(saveJob);
+    // _saveJobs.push_back(saveJob);
     // Create a thread and call the write function
     // _saveThread = std::thread(&SaveJob::write, saveJob);
     // _saveThread.join();
@@ -444,7 +445,20 @@ void MainFrame::SaveFileAs(wxCommandEvent& WXUNUSED(event))
         SetTitle(wxString("Edit - ") << SaveDialog->GetFilename());
         _currentFileName = SaveDialog->GetFilename();
 
-        getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, std::string(_currentFileName.mb_str()));
+        std::cout << " _currentDocPath = " << _currentDocPath << std::endl;
+
+        std::shared_ptr<SaveJob> saveJob = std::make_shared<SaveJob>();
+        // SaveJob saveJob;
+        // ImageBuffer<unsigned char> imageBuffer = getMandelbrotPanel()->getImageBuffer();
+        ImageBuffer<unsigned char> imageBuffer = ImageBuffer<unsigned char>(400,400);
+        BufferEffects::setColor(yellow, imageBuffer);
+        std::string fullyQualified = std::string(_currentDocPath.mb_str());
+        saveJob->setFileName(fullyQualified);
+        saveJob->setFileType(PPM);
+        saveJob->setImageBuffer(imageBuffer);
+        saveJob->write();
+
+        // getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, std::string(_currentFileName.mb_str()));
         // Perform the file write asynchronously.
         // I want to post a message in the title bar when the file write is done
         // std::promise<std::string> promise;

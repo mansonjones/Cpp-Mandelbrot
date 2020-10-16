@@ -96,19 +96,19 @@ void SaveJob::write()
     std::ofstream outputFileStream(_fileName);
     if (outputFileStream.is_open()) 
     {
-        int _width = getImageBuffer().getWidth();
-        int _height = getImageBuffer().getHeight();
+        int _width = _imageBuffer.getWidth();
+        int _height = _imageBuffer.getHeight();
 
         if (outputFileStream.is_open()) {
             outputFileStream << "P3\n" << _width << " " << _height << " 255\n";
                 for (int i = 0; i < _width; ++i) {
                     for (int j = 0; j < _height; ++j) {
-                        int valRed = getImageBuffer().getRed(i,j);
-                        int valGreen = getImageBuffer().getGreen(i,j);
-                        int valBlue = getImageBuffer().getBlue(i,j);
+                        int valRed = _imageBuffer.getRed(i,j);
+                        int valGreen = _imageBuffer.getGreen(i,j);
+                        int valBlue = _imageBuffer.getBlue(i,j);
                         // TODO: See if there is any performance difference between these, 
                         std::stringstream stringStream;
-                        stringStream << 255 << " " << 0 << " " << 0 << "\n";
+                        stringStream << valRed << " " << valGreen << " " << valBlue << "\n";
                         outputFileStream << stringStream.str();
                         // outputFileStream << 0 << " " << 255 << " " << 0 << "\n";
                         // outputFileStream.flush();
