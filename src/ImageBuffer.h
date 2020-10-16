@@ -48,11 +48,11 @@ public:
    // Question.  What should the function thats reallocate the
    // buffer be called?  Is that function even necessary?
 
-   T *getBuffer() const; 
-   size_t getBufferSize() const;
+   T *getRawBuffer() const; 
+   size_t getRawBufferSize() const;
 private:
   int getIndex(int i, int j) const;
-  T *_bufferPtr;  // What is the appropriate smart pointer?  shared_ptr?
+  T *_rawBuffer;  // What is the appropriate smart pointer?  shared_ptr?
   int _width;
   int _height;
 };
@@ -61,9 +61,10 @@ private:
 template <typename T>
 ImageBuffer<T>::ImageBuffer(int width, int height) : _width(width), _height(height) 
 {
-   _bufferPtr = new T[_width*_height*3];  // Assume 3 channels : r, g, b
+   std::cout << "ImageBuffer::Constructor" << std::endl;
+   _rawBuffer = new T[_width*_height*3];  // Assume 3 channels : r, g, b
    for (int i = 0; i < _width*_height*3; i++) {
-      _bufferPtr[i] = i;
+      _rawBuffer[i] = i;
    }
 }
 
@@ -74,10 +75,10 @@ ImageBuffer<T>::ImageBuffer(const ImageBuffer &source) :
 {
    // TODO: There is a bug where the copy constructor is getting called repeatedly.
    // This might be the cause of some of the IO problems.
-   // std::cout << " Copy Constructor" << std::endl;
-   _bufferPtr = new T[_width*_height*3];  // Assume 3 channels : r, g, b
+   std::cout << " ImageBuffer::Copy Constructor" << std::endl;
+   _rawBuffer = new T[_width*_height*3];  // Assume 3 channels : r, g, b
    for (int i = 0; i < _width*_height*3; i++) {
-      _bufferPtr[i] = source._bufferPtr[i];
+      _rawBuffer[i] = source._rawBuffer[i];
    }
 }
 
@@ -85,13 +86,13 @@ ImageBuffer<T>::ImageBuffer(const ImageBuffer &source) :
 template <typename T>
 ImageBuffer<T> &ImageBuffer<T>::operator = (const ImageBuffer<T> &source)
 {
-   std::cout << "Copy Assignment Operator" << std::endl;
+   std::cout << "ImageBuffer::Copy Assignment Operator" << std::endl;
    _width = source._width;
    _height = source._height;
 
-   _bufferPtr = new T[_width*_height*3];  // Assume 3 channels : r, g, b
+   _rawBuffer = new T[_width*_height*3];  // Assume 3 channels : r, g, b
    for (int i = 0; i < _width*_height*3; i++) {
-      _bufferPtr[i] = source._bufferPtr[i];
+      _rawBuffer[i] = source._rawBuffer[i];
    }
 
    return *this;
@@ -101,19 +102,28 @@ ImageBuffer<T> &ImageBuffer<T>::operator = (const ImageBuffer<T> &source)
 template <typename T>
 ImageBuffer<T>::ImageBuffer(ImageBuffer &&source)
 {
-   std::cout << "Move Constructor " << std::endl;
+   std::cout << "ImageBuffer::Move Constructor " << std::endl;
    _width = source._width;
    _height = source._height;
-   _bufferPtr = source._bufferPtr;
+   _rawBuffer = source._rawBuffer;
+
+   // Invalidate source memmbers
+   // delete source._rawBuffer;
+   source._rawBuffer = NULL;
 }
+
 // Move Assignment Operator
 template <typename T>
 ImageBuffer<T> &ImageBuffer<T>::operator = (ImageBuffer &&source)
 {
-   std::cout << "Move Assignement Operator" << std::endl;
+   std::cout << "ImageBuffer::Move Assignement Operator" << std::endl;
    _width = source._width;
    _height = source._height;
-   _bufferPtr = source._bufferPtr;
+   _rawBuffer = source._rawBuffer;
+
+   // Invalidate source members
+   // delete source._rawBuffer;
+   source._rawBuffer = NULL;
 
    return *this;
 }
@@ -122,43 +132,43 @@ ImageBuffer<T> &ImageBuffer<T>::operator = (ImageBuffer &&source)
 template <typename T>
 ImageBuffer<T>::~ImageBuffer()
 {
-  // delete _bufferPtr;
+  // delete _rawBuffer;
 }
 
 template <typename T>
 T ImageBuffer<T>::getRed(int i, int j) const
 {
-   return _bufferPtr[getIndex(i,j)];
+   return _rawBuffer[getIndex(i,j)];
 }
 
 template <typename T>
 T ImageBuffer<T>::getGreen(int i, int j) const
 {
-   return _bufferPtr[getIndex(i,j) + 1];
+   return _rawBuffer[getIndex(i,j) + 1];
 }
 
 template <typename T>
 T ImageBuffer<T>::getBlue(int i, int j) const
 {
-   return _bufferPtr[getIndex(i,j) + 2];
+   return _rawBuffer[getIndex(i,j) + 2];
 }
 
 template <typename T>
 void ImageBuffer<T>::setRed(int i, int j, T r) 
 {
-   _bufferPtr[getIndex(i,j)] = r;  
+   _rawBuffer[getIndex(i,j)] = r;  
 }
 
 template <typename T>
 void ImageBuffer<T>::setGreen(int i, int j, T g) 
 {
-   _bufferPtr[getIndex(i,j) + 1] = g;  
+   _rawBuffer[getIndex(i,j) + 1] = g;  
 }
 
 template <typename T>
 void ImageBuffer<T>::setBlue(int i, int j, T b)
 {
-   _bufferPtr[getIndex(i,j) + 2] = b;  
+   _rawBuffer[getIndex(i,j) + 2] = b;  
 }
 
 template <typename T>
@@ -188,13 +198,13 @@ void ImageBuffer<T>::setHeight(int h)
    // Question.  What should the function the reallocate the
    // buffer be called?
 template <typename T>
-T *ImageBuffer<T>::getBuffer() const
+T *ImageBuffer<T>::getRawBuffer() const
 {
-   return _bufferPtr;
+   return _rawBuffer;
 }
 
 template <typename T>
-size_t ImageBuffer<T>::getBufferSize() const
+size_t ImageBuffer<T>::getRawBufferSize() const
 {
    return _width*_height*3;
 }

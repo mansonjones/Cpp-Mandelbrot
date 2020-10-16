@@ -31,7 +31,7 @@ Mandelbrot::~Mandelbrot()
 unsigned char *Mandelbrot::getBuffer() 
 {
    // return raw _buffer;
-   return _imageBuffer->getBuffer();
+   return _imageBuffer->getRawBuffer();
 }
 
 ImageBuffer<unsigned char> *Mandelbrot::getImageBuffer() 

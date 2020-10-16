@@ -83,17 +83,18 @@ wxPanel(parent)
     _mandelbrotPointer->setScale(1);
 
     _autoSave = new AutoSave(this);
-    _autoSave->runTimerOnThread();
-    _autoSave->runMonitorOnThread();
+    _autoSave->runSaveMessagesThread();
+    // _autoSave->runTimerOnThread();
+    // _autoSave->runMonitorOnThread();
     // _autoSave->saveJobPollingLoop();
     
     _imageBuffer = ImageBuffer<unsigned char>(width, height);
     _mandelbrotPointer->render(_imageBuffer);   
     // For testing
     // BufferEffects::setColor(yellow, _imageBuffer);
-    size_t bufferSize = _imageBuffer.getBufferSize();
+    size_t bufferSize = _imageBuffer.getRawBufferSize();
     unsigned char *rawBuffer = new unsigned char[bufferSize];
-    rawBuffer = _imageBuffer.getBuffer();
+    rawBuffer = _imageBuffer.getRawBuffer();
     // 
     bool imageCreationSuccess = image.Create( width, height, rawBuffer);
     if (!imageCreationSuccess) {
@@ -177,9 +178,9 @@ void MandelbrotPanel::moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer
 
     _imageBuffer = std::move(imageBuffer);
 
-    size_t bufferSize = _imageBuffer.getBufferSize();
+    size_t bufferSize = _imageBuffer.getRawBufferSize();
     unsigned char *buffer = new unsigned char[bufferSize];
-    buffer = _imageBuffer.getBuffer();
+    buffer = _imageBuffer.getRawBuffer();
     // 
     bool imageCreationSuccess = image.Create( _imageBuffer.getWidth(), _imageBuffer.getHeight(), buffer);
     if (!imageCreationSuccess) {
@@ -214,9 +215,9 @@ void MandelbrotPanel::recomputeMandelbrot()
      _mandelbrotPointer->render(_imageBuffer);   
     // For testing
     // BufferEffects::setColor(yellow, _imageBuffer);
-    size_t bufferSize = _imageBuffer.getBufferSize();
+    size_t bufferSize = _imageBuffer.getRawBufferSize();
     unsigned char *rawBuffer = new unsigned char[bufferSize];
-    rawBuffer = _imageBuffer.getBuffer();
+    rawBuffer = _imageBuffer.getRawBuffer();
     // 
     bool imageCreationSuccess = image.Create( width, height, rawBuffer);
     if (!imageCreationSuccess) {

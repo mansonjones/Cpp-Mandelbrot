@@ -13,12 +13,14 @@ AutoSave::AutoSave()
 {
   // std::cout << " AutoSave Constructor " << std::endl;
   _messageQueue = std::make_shared<MessageQueue<int>>();
+  _messageQueue2 = std::shared_ptr<MessageQueue<SaveJob>>();
 }
 
 AutoSave::AutoSave(MandelbrotPanel *mandelbrotPanel) : _mandelbrotPanel(mandelbrotPanel)
 {
   // std::cout << " AutoSave Constructor " << std::endl;
   _messageQueue = std::make_shared<MessageQueue<int>>();
+    _messageQueue2 = std::shared_ptr<MessageQueue<SaveJob>>();
 }
 
 AutoSave::~AutoSave()
@@ -32,6 +34,53 @@ AutoSave::~AutoSave()
   });
 }
 
+void AutoSave::runSaveMessagesThread() 
+{
+    _threads.emplace_back(std::thread(&AutoSave::sendSaveMessages, this));
+}
+
+void AutoSave::sendSaveMessages()
+{
+    // Send save messages at a regular interval
+    unsigned int interval = 10000; // milliseconds
+
+    unsigned int counter = 0;
+    // TODO : Cyle the file number 
+    while (true)
+    {
+       std::this_thread::sleep_for(std::chrono::milliseconds(interval));
+       // std::unique_lock<std::mutex> lock(_mutex);
+        std::cout << " Auto Save ... " << std::endl;
+        // lock.unlock();
+        // bool autoSave = true;
+        FileType fileType = PPM;
+        std::string fileName = "autosave_" + std::to_string(counter) + ".ppm";
+        ImageBuffer<unsigned char> imageBuffer(10,10);
+        // BufferEffects::setColor(yellow, imageBuffer);
+
+        SaveJob saveJob(fileType, fileName, imageBuffer);
+        _messageQueue2->send(std::move(saveJob));
+        // _messageQueue->send(std::move(counter));
+        counter++;
+        // std::cout << " Message Queue Size " << _messageQueue->size() << std::endl;
+         // I could write the output here
+         // Question: should mutex be used for console messages?
+    }
+
+}
+
+void AutoSave::runReceiveMessagesThread()
+{
+     _threads.emplace_back(std::thread(&AutoSave::receiveSaveMessages, this));
+}
+void AutoSave::receiveSaveMessages() 
+{
+    while (true) 
+    {
+        std::cout << " *** Receive Save Message " << std::endl;
+        auto saveJob = _messageQueue2->receive();
+    }
+}
 void AutoSave::runTimerOnThread()
 {
    _threads.emplace_back(std::thread(&AutoSave::sendMessageAtInterval, this));

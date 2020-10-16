@@ -39,19 +39,22 @@ SaveJob &SaveJob::operator = (const SaveJob &source)
 // Move Constructor
 SaveJob::SaveJob(SaveJob &&source) :
     _fileType(source._fileType),
-    _fileName(source._fileName),
-    _imageBuffer(source._imageBuffer)
-{}
+    _fileName(source._fileName)
+{
+    std::cout << " SaveJob::Move Constructor " << std::endl;
+    _imageBuffer = std::move(source._imageBuffer);
+}
 
 // Move Assignment Operator
 SaveJob &SaveJob::operator = (SaveJob &&source)
 {
+    std::cout << " SaveJob::Move Assignment Operator " << std::endl;
     if (this == &source) {
         return *this;
     }
     _fileType = source._fileType;
     _fileName = source._fileName;
-    _imageBuffer = source._imageBuffer;
+    _imageBuffer = std::move(source._imageBuffer);
 
     return *this;
 }

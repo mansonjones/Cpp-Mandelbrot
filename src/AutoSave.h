@@ -26,6 +26,12 @@ public:
    AutoSave(MandelbrotPanel *pointer);
    ~AutoSave();
 
+   void runSaveMessagesThread();
+   void sendSaveMessages();
+
+   void runReceiveMessagesThread();
+   void receiveSaveMessages();
+
    void runTimerOnThread();
    void runMonitorOnThread();
    void waitForAutoSaveMessage();
@@ -52,6 +58,8 @@ private:
    MandelbrotPanel *_mandelbrotPanel;
    std::vector<std::shared_ptr<SaveJob>> _saveJobs;
    bool _saveState;
+
+   std::shared_ptr<MessageQueue<SaveJob>> _messageQueue2;
 
 
 //
