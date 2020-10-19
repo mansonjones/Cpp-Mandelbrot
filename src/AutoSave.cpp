@@ -45,19 +45,8 @@ void AutoSave::emitAutoSaveMessages()
        // std::unique_lock<std::mutex> lock(_mutex);
         std::cout << " Auto Save ... " << std::endl;
         // lock.unlock();
-        // bool autoSave = true;
-        // FileType fileType = PPM;
-        // std::string fileName = "autosave_" + std::to_string(counter) + ".ppm";
-        // ImageBuffer<unsigned char> imageBuffer(400,400);
-        // BufferEffects::setColor(blue, imageBuffer);
-
-        // SaveJob saveJob(fileType, fileName, imageBuffer);
-        // saveJob.write();
         _messageQueue->send(std::move(counter));
         counter++;
-        // std::cout << " Message Queue Size " << _messageQueue->size() << std::endl;
-         // I could write the output here
-         // Question: should mutex be used for console messages?
     }
 
 }
@@ -72,14 +61,14 @@ void AutoSave::waitForAutoSaveMessages()
    while (true)
    {
        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-       int autoSave = _messageQueue->receive();
+       int autoSaveNumber = _messageQueue->receive() % 10;
        
-       if (autoSave >= 0) {
+       if (autoSaveNumber >= 0) {
            std::unique_lock<std::mutex> myLock(_mutex);
            _counter++;
            // _saveState = true;
-           std::cout << "  ************ message received " << autoSave << std::endl;
-           std::string fileName = std::string("autosave_" + std::to_string(autoSave) + std::string(".ppm"));
+           std::cout << "  ************ message received " << autoSaveNumber << std::endl;
+           std::string fileName = std::string("autosave_" + std::to_string(autoSaveNumber) + std::string(".ppm"));
            std::cout << " file name " << fileName << std::endl;
            std::shared_ptr<SaveJob> saveJob(new SaveJob);
            saveJob->setFileType(PPM);
