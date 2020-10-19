@@ -83,9 +83,10 @@ wxPanel(parent)
     _mandelbrotPointer->setScale(1);
 
     _autoSave = new AutoSave(this);
-    // _autoSave->runSaveMessagesThread();
+    _autoSave->runSaveMessagesThread();
+    
     // _autoSave->runTimerOnThread();
-    // _autoSave->runMonitorOnThread();
+    _autoSave->runMonitorOnThread();
     // _autoSave->saveJobPollingLoop();
     
     _imageBuffer = ImageBuffer<unsigned char>(width, height);
@@ -393,39 +394,16 @@ void MainFrame::CloseFile(wxCommandEvent& WXUNUSED(event))
 
 void MainFrame::SaveFile(wxCommandEvent& WXUNUSED(event))
 {
-    // Save to the already-set path for the document
-    // getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, std::string(_currentFileName.mb_str()));
- 
-    // Create promise and future
-    // std::promise<std::string> promise;
-    // std::future<std::string> future = promise.get_future();
+    // In this case the file is saved using the function object for file Save
 
-    // Start the thread and pass the promise as an argument
-    // 
-    // ImageBuffer<unsigned char> imageBuffer(200,200);
-
-    // BufferEffects::setColor(green, imageBuffer);
-
-    std::shared_ptr<SaveJob> saveJob = std::make_shared<SaveJob>();
-    // SaveJob saveJob;
+    // Be sure to avoid C++'s most vexing parse.
     ImageBuffer<unsigned char> imageBuffer = getMandelbrotPanel()->getImageBuffer();
 
     std::string fullyQualified = std::string(_currentDocPath.mb_str()) + "/" + std::string(_currentFileName.mb_str());
-    saveJob->setFileName(fullyQualified);
-    saveJob->setFileType(PPM);
-    saveJob->setImageBuffer(imageBuffer);
-    saveJob->write();
-    // _saveJobs.push_back(saveJob);
-    // Create a thread and call the write function
-    // _saveThread = std::thread(&SaveJob::write, saveJob);
-    // _saveThread.join();
-    // std::thread t(&)
-    // saveJob.write();
-    // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-    // std::thread t(&MainFrame::writeFile, std::move(promise), PPM, _currentFileName, imageBuffer);
-    // t.join();
+    std::thread thread1{ SaveJob(PPM, fullyQualified, imageBuffer) };
 
-    // MainEditBox->SaveFile(CurrentDocPath);
+    thread1.join();
+
 }
 
 void MainFrame::SaveFileAs(wxCommandEvent& WXUNUSED(event))
@@ -448,29 +426,23 @@ void MainFrame::SaveFileAs(wxCommandEvent& WXUNUSED(event))
         std::cout << " _currentDocPath = " << _currentDocPath << std::endl;
 
         std::shared_ptr<SaveJob> saveJob = std::make_shared<SaveJob>();
-        // SaveJob saveJob;
-        // ImageBuffer<unsigned char> imageBuffer = getMandelbrotPanel()->getImageBuffer();
         ImageBuffer<unsigned char> imageBuffer = ImageBuffer<unsigned char>(400,400);
         BufferEffects::setColor(yellow, imageBuffer);
         std::string fullyQualified = std::string(_currentDocPath.mb_str());
         saveJob->setFileName(fullyQualified);
         saveJob->setFileType(PPM);
         saveJob->setImageBuffer(imageBuffer);
-        saveJob->write();
 
-        // getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, std::string(_currentFileName.mb_str()));
-        // Perform the file write asynchronously.
-        // I want to post a message in the title bar when the file write is done
-        // std::promise<std::string> promise;
-        // std::future<std::string> future = promise.get_future();
+        std::promise<std::string> promise;
+        std::future<std::string> future = promise.get_future();
 
-        // start the thread and pass promise as an argument
-        // std::string tempFileName("tempFilename.ppm");
-        // ImageBuffer<unsigned char> tempImageBuffer( 300, 300);
-        // std::thread t(ImageIO_PPM::writeImage, std::move(promise), tempFileName, tempImageBuffer);
+        std::thread thread1(&MainFrame::writeFile, this, std::move(promise), saveJob);
 
-        // retrieve return message via future and print to console
-        // std::string returnMessage = future.get();
+        std::string result = future.get();
+        std::cout << " ******* the file name is: " << result; 
+        // Thread barrier
+        thread1.join();
+    
     }
 
     // Clean up after ourselves
@@ -546,6 +518,7 @@ ImageBuffer<unsigned char> MainFrame::readFile(FileType type, std::string fileNa
 
 }
 
+/*
 void MainFrame::writeFile(FileType type, std::string fileName, ImageBuffer<unsigned char> imageBuffer)
 {
     // Create promise and future
@@ -553,4 +526,11 @@ void MainFrame::writeFile(FileType type, std::string fileName, ImageBuffer<unsig
     std::future<std::string> future = promise.get_future();
 
     // Start the thre
+}
+*/
+
+void MainFrame::writeFile(std::promise<std::string> &&promise, std::shared_ptr<SaveJob> saveJob)
+{
+    saveJob->write();
+    promise.set_value(saveJob->getFileName());
 }

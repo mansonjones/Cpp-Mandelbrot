@@ -96,6 +96,7 @@ void SaveJob::write()
     std::ofstream outputFileStream(_fileName);
     if (outputFileStream.is_open()) 
     {
+    
         int _width = _imageBuffer.getWidth();
         int _height = _imageBuffer.getHeight();
 
@@ -123,19 +124,8 @@ void SaveJob::write()
     }
 }
 
+// Function object
 void SaveJob::operator()()
 {
-    // TODO : Revise this code to write to a file
-    // Need to figure out how to use mutex to lock the
-    // output file stream object
-    // TODO: Use mutex to lock the output file stream
-    std::ofstream outputFileStream(_fileName);
-    if (outputFileStream.is_open()) {
-        outputFileStream << " Using the SaveJob call operator " << std::endl;
-        outputFileStream << "File Name = " << _fileName << std::endl;
-        outputFileStream << " width = " << _imageBuffer.getWidth() << std::endl;
-        outputFileStream << " height = " << _imageBuffer.getHeight() << std::endl;
-        outputFileStream.close();
-    }    
-
+    write();
 }

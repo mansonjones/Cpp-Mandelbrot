@@ -10,6 +10,7 @@
 #include "ImageBuffer.h"
 #include <string>
 #include <thread>
+#include <future>
 
 class MainFrame;
 class Mandelbrot;
@@ -85,7 +86,7 @@ public:
     ImageBuffer<unsigned char> readFile(FileType type, std::string fileName);
 
     // This should be moved into a separate class
-    void writeFile(FileType type, std::string fileName, ImageBuffer<unsigned char> imageBuffer);
+    // void writeFile(FileType type, std::string fileName, ImageBuffer<unsigned char> imageBuffer);
 
     DECLARE_EVENT_TABLE()
 private:
@@ -99,6 +100,8 @@ private:
     std::thread _saveThread;
     std::shared_ptr<SaveJob> _saveJob;
     std::vector<std::shared_ptr<SaveJob>> _saveJobs;
+
+    void writeFile(std::promise<std::string> &&promise, std::shared_ptr<SaveJob> saveJob);
 
     wxSlider *_sliderX;
     wxSlider *_sliderY;

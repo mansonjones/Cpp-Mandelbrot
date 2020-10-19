@@ -53,14 +53,15 @@ void AutoSave::sendSaveMessages()
         std::cout << " Auto Save ... " << std::endl;
         // lock.unlock();
         // bool autoSave = true;
-        FileType fileType = PPM;
-        std::string fileName = "autosave_" + std::to_string(counter) + ".ppm";
-        ImageBuffer<unsigned char> imageBuffer(10,10);
-        // BufferEffects::setColor(yellow, imageBuffer);
+        // FileType fileType = PPM;
+        // std::string fileName = "autosave_" + std::to_string(counter) + ".ppm";
+        // ImageBuffer<unsigned char> imageBuffer(400,400);
+        // BufferEffects::setColor(blue, imageBuffer);
 
-        SaveJob saveJob(fileType, fileName, imageBuffer);
-        _messageQueue2->send(std::move(saveJob));
-        // _messageQueue->send(std::move(counter));
+        // SaveJob saveJob(fileType, fileName, imageBuffer);
+        // saveJob.write();
+        // _messageQueue2->send(std::move(saveJob));
+        _messageQueue->send(std::move(counter));
         counter++;
         // std::cout << " Message Queue Size " << _messageQueue->size() << std::endl;
          // I could write the output here
@@ -117,9 +118,10 @@ void AutoSave::waitForAutoSaveMessage()
            saveJob->setImageBuffer(imageBuffer);
            BufferEffects::setColor(red, imageBuffer);
            saveJob->setFileType(PPM);
-           std::this_thread::sleep_for(std::chrono::milliseconds(1));
-           auto future = std::async(std::launch::async, &AutoSave::addSaveJobToQueue, this, saveJob);
-           future.get();
+           saveJob->write();
+           //std::this_thread::sleep_for(std::chrono::milliseconds(1));
+           // auto future = std::async(std::launch::async, &AutoSave::addSaveJobToQueue, this, saveJob);
+           // future.get();
            // return _counter;
            // std::unique_lock<std::mutex> myLock(_mutex);
            // std::lock_guard<std::mutex> lock(_mutex);
