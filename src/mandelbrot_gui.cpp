@@ -83,16 +83,13 @@ wxPanel(parent)
     _mandelbrotPointer->setScale(1);
 
     _autoSave = new AutoSave(this);
-    _autoSave->runSaveMessagesThread();
+    _autoSave->emitAutoSaveMessagesOnThread();
     
-    // _autoSave->runTimerOnThread();
-    _autoSave->runMonitorOnThread();
-    // _autoSave->saveJobPollingLoop();
+    _autoSave->waitForAutoSaveMessagesOnThread();
     
     _imageBuffer = ImageBuffer<unsigned char>(width, height);
     _mandelbrotPointer->render(_imageBuffer);   
-    // For testing
-    // BufferEffects::setColor(yellow, _imageBuffer);
+
     size_t bufferSize = _imageBuffer.getRawBufferSize();
     unsigned char *rawBuffer = new unsigned char[bufferSize];
     rawBuffer = _imageBuffer.getRawBuffer();
@@ -214,8 +211,6 @@ void MandelbrotPanel::recomputeMandelbrot()
     int height = _imageBuffer.getHeight();
 
      _mandelbrotPointer->render(_imageBuffer);   
-    // For testing
-    // BufferEffects::setColor(yellow, _imageBuffer);
     size_t bufferSize = _imageBuffer.getRawBufferSize();
     unsigned char *rawBuffer = new unsigned char[bufferSize];
     rawBuffer = _imageBuffer.getRawBuffer();
@@ -367,11 +362,9 @@ void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
             
         ImageBuffer<unsigned char> imageBuffer = readFile(PPM, std::string(_currentDocPath.mb_str()));
             
-        // Diagnostic
-        // BufferEffects::setColor(cyan, imageBuffer);
         
-            // Use move semantics to copy the image buffer into the MandelbrotPanel class
-            _mandelbrotPanel->moveImageBufferHere(imageBuffer);
+            
+        _mandelbrotPanel->moveImageBufferHere(imageBuffer);
     }
     OpenDialog->Destroy();
 
@@ -379,13 +372,8 @@ void MainFrame::OpenFile(wxCommandEvent& WXUNUSED(event))
 
 void MainFrame::CloseFile(wxCommandEvent& WXUNUSED(event))
 {
-    // Clear the Text Box
-    // MainEditBox->Clear();
-    // Reset the current File being edited
     _currentDocPath = ::wxGetCwd();
     // Set the Title to reflect the file openha
-    // TODO: What should be the behavior here?  Save the file and reset the
-    // name to unknown?
     std::string fName = "temp_close_file.ppm";
     getMandelbrotPanel()->getMandelbrotPointer()->write(PPM, std::string(_currentFileName.mb_str()));
 
@@ -426,8 +414,9 @@ void MainFrame::SaveFileAs(wxCommandEvent& WXUNUSED(event))
         std::cout << " _currentDocPath = " << _currentDocPath << std::endl;
 
         std::shared_ptr<SaveJob> saveJob = std::make_shared<SaveJob>();
-        ImageBuffer<unsigned char> imageBuffer = ImageBuffer<unsigned char>(400,400);
-        BufferEffects::setColor(yellow, imageBuffer);
+        // ImageBuffer<unsigned char> imageBuffer = ImageBuffer<unsigned char>(400,400);
+        // BufferEffects::setColor(yellow, imageBuffer);
+        ImageBuffer<unsigned char> imageBuffer = getMandelbrotPanel()->getImageBuffer();
         std::string fullyQualified = std::string(_currentDocPath.mb_str());
         saveJob->setFileName(fullyQualified);
         saveJob->setFileType(PPM);

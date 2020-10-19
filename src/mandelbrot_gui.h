@@ -85,9 +85,6 @@ public:
     // This should be moved into a separate class.
     ImageBuffer<unsigned char> readFile(FileType type, std::string fileName);
 
-    // This should be moved into a separate class
-    // void writeFile(FileType type, std::string fileName, ImageBuffer<unsigned char> imageBuffer);
-
     DECLARE_EVENT_TABLE()
 private:
 // The Path to the file we have open

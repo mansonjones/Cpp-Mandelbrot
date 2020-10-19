@@ -26,41 +26,24 @@ public:
    AutoSave(MandelbrotPanel *pointer);
    ~AutoSave();
 
-   void runSaveMessagesThread();
-   void sendSaveMessages();
+   void emitAutoSaveMessagesOnThread();
+   // void emitAutoSaveMessages();
 
-   void runReceiveMessagesThread();
-   void receiveSaveMessages();
+   void waitForAutoSaveMessagesOnThread();
+   // void waitForAutoSaveMessages();
 
-   void runTimerOnThread();
-   void runMonitorOnThread();
-   void waitForAutoSaveMessage();
-   void launchSaveJobOnThread(std::string fileName);
-   void saveFile(std::promise<std::string> && promise, SaveJob saveJob);
-   void addSaveJobToQueue(std::shared_ptr<SaveJob> saveJob);
-   void saveJobPollingLoop();
-   void processSaveJobQueue();
-   void monitorAutoSaveMessages();
-   bool getSaveState() const { return _saveState; }
    int messageQueueSize() { return _messageQueue->size(); }
 private:
+   void emitAutoSaveMessages();
+   void waitForAutoSaveMessages();
    static int getCounter();
-   void sendMessageAtInterval();
-// Add a MessageQueue of AutoSaveJobs here
    std::vector<std::thread> _threads;  // holds all threads that have been launched within this object
-   std::vector<std::thread> _jobThreads; 
-   // std::shared_ptr<MessageQueue<bool>> _messageQueue;
    std::shared_ptr<MessageQueue<int>> _messageQueue;
-   WaitingSaveJobs _waitingSaveJobs;
    static std::mutex _mutex;
-   SaveJob _saveJob;
    static unsigned long _counter;
    MandelbrotPanel *_mandelbrotPanel;
-   std::vector<std::shared_ptr<SaveJob>> _saveJobs;
-   bool _saveState;
 
-   std::shared_ptr<MessageQueue<SaveJob>> _messageQueue2;
-
+   void writeFile(std::promise<std::string> &&promise, std::shared_ptr<SaveJob> saveJob); 
 
 //
 };

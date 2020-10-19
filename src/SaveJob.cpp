@@ -92,7 +92,7 @@ ImageBuffer<unsigned char> SaveJob::getImageBuffer() const
 void SaveJob::write()
 {
     // TODO: Use the ImageIO code to write this out.
-    // std::unique_lock<std::mutex> ioLock(_ioMutex);
+    std::unique_lock<std::mutex> ioLock(_ioMutex);
     std::ofstream outputFileStream(_fileName);
     if (outputFileStream.is_open()) 
     {
