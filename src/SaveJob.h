@@ -34,7 +34,7 @@ public:
 };
 */
 
-class SaveJob : public std::enable_shared_from_this<SaveJob>
+class SaveJob 
 {
 public:
     SaveJob();
