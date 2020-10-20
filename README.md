@@ -4,12 +4,12 @@ This is a C++ project that draws a mandelbrot set using WxWidgets to build the G
 ### Rubric Part 1 : Compiling and Testing
 WxWidgets will need to be installed.  See [wxwidgets home page](https://www.wxwidgets.org/) for details.
 Instructions for building and running:
-> git clone https://github.com/mansonjones/Cpp-Mandelbrot.git
-> cd Cpp-Mandelbrot
-> mkdir build
-> cd build
-> cmake .. && make
-> ./mandelbrot 
+- git clone https://github.com/mansonjones/Cpp-Mandelbrot.git
+- cd Cpp-Mandelbrot
+- mkdir build
+- cd build
+- cmake .. && make
+- ./mandelbrot 
 
 ### Rubric Part 2 : Files and class structure.
 
