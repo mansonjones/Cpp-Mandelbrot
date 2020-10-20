@@ -20,6 +20,7 @@ Once launched, the app looks like this:
 | Class | Description |
 | -------------- | -------------------------------------------------------------------------------------- |
 | AutoSave | Manages the autosave process. |
+| BufferEffects | Used only for debugging. Creates single color ImageBuffers |
 | Constants | Used to store application constants. |
 | ImageBuffer | Stores an RRB image and provides basic RGB read / write operations |
 | ImageIO, ImageIO_PPM | A class factory for file IO services. |
