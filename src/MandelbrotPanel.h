@@ -35,7 +35,6 @@ public:
 
     Mandelbrot *getMandelbrotPointer() { return _mandelbrotPointer.get(); }
     void moveImageBufferHere(ImageBuffer<PixelType> imageBuffer);
-    void debug(); // This should be removed eventually
     ImageBuffer<PixelType> getImageBuffer();
 
     void recomputeMandelbrot();

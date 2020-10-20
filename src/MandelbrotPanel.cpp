@@ -150,18 +150,6 @@ void MandelbrotPanel::moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer
     updateDisplay();
 }
 
-void MandelbrotPanel::debug()
-{
-    int counter = 0;
-    for (int i = 0; i < _imageBuffer.getWidth(); i++) {
-        for (int j = 0; j < _imageBuffer.getHeight(); j++) {
-            std::cout << counter << " " << int(_imageBuffer.getRed(i,j)) << " " << int(_imageBuffer.getGreen(i,j)) << " " << int(_imageBuffer.getBlue(i,j)) << std::endl;
-            counter++;
-        }
-    }
-    
-}
-
 ImageBuffer<unsigned char> MandelbrotPanel::getImageBuffer() 
 { 
     return _imageBuffer; 
