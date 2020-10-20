@@ -16,8 +16,8 @@ enum Color {
 class BufferEffects 
 {
 public:
-    static void setColor(Color color, ImageBuffer<unsigned char> &imageBuffer);
-    static void setRGB(unsigned char r, unsigned char g, unsigned char b, ImageBuffer<unsigned char> &imageBuffer);
+    static void setColor(Color color, ImageBuffer<PixelType> &imageBuffer);
+    static void setRGB(PixelType r, PixelType g, PixelType b, ImageBuffer<PixelType> &imageBuffer);
 };
 
 #endif // _BUFFER_EFFECTS_H_

@@ -1,6 +1,8 @@
 #ifndef IMAGE_BUFFER_H_
 #define IMAGE_BUFFER_H_
 
+typedef unsigned char PixelType;
+
 #include <iostream>
 
 // Question: Is there some interesting way to use a functor

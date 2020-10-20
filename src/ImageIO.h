@@ -12,15 +12,15 @@ enum FileType
 class ImageIO
 {
 public:
-   ImageIO(const FileType fileType, const std::string fileName, ImageBuffer<unsigned char> *imageBuffer);
+   ImageIO(const FileType fileType, const std::string fileName, ImageBuffer<PixelType> *imageBuffer);
    // pure virtual function
    virtual void write() = 0;
-   virtual ImageBuffer<unsigned char> *read() = 0;
-   static ImageIO *getImageWriter(FileType fileType, std::string fileName, ImageBuffer<unsigned char> *imageBuffer);
+   virtual ImageBuffer<PixelType> *read() = 0;
+   static ImageIO *getImageWriter(FileType fileType, std::string fileName, ImageBuffer<PixelType> *imageBuffer);
 protected:
    FileType _fileType;
    std::string _fileName;
-   ImageBuffer<unsigned char> *_imageBuffer;
+   ImageBuffer<PixelType> *_imageBuffer;
 };
 
 

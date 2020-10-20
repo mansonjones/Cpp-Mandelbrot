@@ -9,7 +9,7 @@ std::mutex SaveJob::_ioMutex;
 SaveJob::SaveJob()
 {}
 
-SaveJob::SaveJob(FileType fileType, std::string fileName, ImageBuffer<unsigned char> imageBuffer) :
+SaveJob::SaveJob(FileType fileType, std::string fileName, ImageBuffer<PixelType> imageBuffer) :
 _fileType(fileType), _fileName(fileName), _imageBuffer(imageBuffer)
 {}
 
@@ -59,7 +59,7 @@ SaveJob &SaveJob::operator = (SaveJob &&source)
     return *this;
 }
 
-void SaveJob::setImageBuffer(ImageBuffer<unsigned char> imageBuffer)
+void SaveJob::setImageBuffer(ImageBuffer<PixelType> imageBuffer)
 {
     _fileType = PPM;
     _imageBuffer = imageBuffer;
@@ -84,7 +84,7 @@ FileType SaveJob::getFileType() const
     return _fileType;
 }
 
-ImageBuffer<unsigned char> SaveJob::getImageBuffer() const
+ImageBuffer<PixelType> SaveJob::getImageBuffer() const
 {
     return _imageBuffer;
 }

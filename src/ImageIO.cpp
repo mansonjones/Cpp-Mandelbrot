@@ -4,13 +4,14 @@
 
 #include <iostream>
 
-ImageIO::ImageIO(FileType fileType, std::string fileName, ImageBuffer<unsigned char> *imageBuffer) :
+ImageIO::ImageIO(FileType fileType, std::string fileName, ImageBuffer<PixelType> *imageBuffer) :
   _fileType(fileType), _fileName(fileName), _imageBuffer(imageBuffer)
 {
 } 
 
-ImageIO *ImageIO::getImageWriter(FileType fileType, std::string fileName, ImageBuffer<unsigned char> *imageBuffer) 
+ImageIO *ImageIO::getImageWriter(FileType fileType, std::string fileName, ImageBuffer<PixelType> *imageBuffer) 
 {
+
    // Question: Would it be better if this threw an exception for the default case?
    switch (fileType) 
    {

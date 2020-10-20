@@ -38,7 +38,7 @@ class SaveJob : public std::enable_shared_from_this<SaveJob>
 {
 public:
     SaveJob();
-    SaveJob(FileType fileType, std::string fileName, ImageBuffer<unsigned char> imageBuffer);
+    SaveJob(FileType fileType, std::string fileName, ImageBuffer<PixelType> imageBuffer);
     ~SaveJob();
 
     // Copy Constructor
@@ -54,18 +54,18 @@ public:
     SaveJob &operator = (SaveJob &&source);
 
     void setFileType(FileType fileType);
-    void setImageBuffer(ImageBuffer<unsigned char> imageBuffer);
+    void setImageBuffer(ImageBuffer<PixelType> imageBuffer);
     void setFileName(std::string fileName);
 
     std::string getFileName() const;
     FileType getFileType() const;
-    ImageBuffer<unsigned char> getImageBuffer() const;
+    ImageBuffer<PixelType> getImageBuffer() const;
     void write();
     // Add Call operator
     void operator()();
 private:
     // Todo: Add image 
-    ImageBuffer<unsigned char> _imageBuffer;
+    ImageBuffer<PixelType> _imageBuffer;
     std::string _fileName;
     FileType _fileType;
     static std::mutex _ioMutex; // mutex shared by all save jobs to protect outputstream

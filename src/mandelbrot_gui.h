@@ -6,55 +6,15 @@
 #include <wx/string.h>
 #include <wx/sizer.h>
 
-#include "AutoSave.h"
 #include "ImageBuffer.h"
+#include "MandelbrotPanel.h"
+
 #include <string>
 #include <thread>
 #include <future>
 
 class MainFrame;
 class Mandelbrot;
-
-
-class MandelbrotPanel : public wxPanel
-{
-private:
-    std::unique_ptr<Mandelbrot> _mandelbrotPointer;
-    AutoSave *_autoSave;  // eventually make a unique_ptr
-    wxImage image;
-    wxBitmap resized;
-    ImageBuffer<unsigned char> _imageBuffer;
-    int w, h;
-    
-public:
-    MandelbrotPanel(wxFrame* parent, wxString file, wxBitmapType format);
-    ~MandelbrotPanel(); 
-    
-    void paintEvent(wxPaintEvent & evt);
-    void paintNow();
-    void OnSize(wxSizeEvent& event);
-    void render(wxDC& dc);
-
-    Mandelbrot *getMandelbrotPointer() { return _mandelbrotPointer.get(); }
-    void moveImageBufferHere(ImageBuffer<unsigned char> imageBuffer);
-    void debug(); // This should be removed eventually
-    ImageBuffer<unsigned char> getImageBuffer();
-
-    void recomputeMandelbrot();
-    // some useful events
-    /*
-     void mouseMoved(wxMouseEvent& event);
-     void mouseDown(wxMouseEvent& event);
-     void mouseWheelMoved(wxMouseEvent& event);
-     void mouseReleased(wxMouseEvent& event);
-     void rightClick(wxMouseEvent& event);
-     void mouseLeftWindow(wxMouseEvent& event);
-     void keyPressed(wxKeyEvent& event);
-     void keyReleased(wxKeyEvent& event);
-     */
-    
-    DECLARE_EVENT_TABLE()
-};
 
 class MandelbrotApp: public wxApp
 {
@@ -83,7 +43,7 @@ public:
     MandelbrotPanel *getMandelbrotPanel() { return _mandelbrotPanel; }
 
     // This should be moved into a separate class.
-    ImageBuffer<unsigned char> readFile(FileType type, std::string fileName);
+    ImageBuffer<PixelType> readFile(FileType type, std::string fileName);
 
     DECLARE_EVENT_TABLE()
 private:
@@ -93,7 +53,7 @@ private:
 
     wxMenuBar *_mainMenu;
     MandelbrotPanel *_mandelbrotPanel;  // should convert to shared pointer
-    AutoSave *_autoSave;
+
     std::thread _saveThread;
     std::shared_ptr<SaveJob> _saveJob;
     std::vector<std::shared_ptr<SaveJob>> _saveJobs;

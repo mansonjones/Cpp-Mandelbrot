@@ -18,10 +18,10 @@ public:
    Mandelbrot(float width, float height);
    ~Mandelbrot();
    void write(FileType fileType, std::string fileName);   // this should be improved using the ostream operator
-   unsigned char *getBuffer();
-   ImageBuffer<unsigned char> *getImageBuffer();
+   PixelType *getBuffer();
+   ImageBuffer<PixelType> *getImageBuffer();
    
-   void render(ImageBuffer<unsigned char> &imageBuffer);  // This could be turned into a static function
+   void render(ImageBuffer<PixelType> &imageBuffer);  // This could be turned into a static function
 
    void sayHello() { std::cout << " Mandelbrot Say Hello " << std::endl; }
    // This function should eventually be moved into the IO class;
@@ -35,7 +35,7 @@ private:
    float _xOffset;
    float _yOffset;
    float _scale;
-   ImageBuffer<unsigned char> *_imageBuffer;
+   ImageBuffer<PixelType> *_imageBuffer;
    
 };
 
