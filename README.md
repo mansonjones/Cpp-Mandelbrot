@@ -11,6 +11,10 @@ Instructions for building and running:
 - cmake .. && make
 - ./mandelbrot 
 
+Once launched, the app looks like this:
+
+![Mandelbrot App](Mandelbrot_Screen_Shot.png)
+
 ### Rubric Part 2 : Files and class structure.
 
 | Class | Description |
