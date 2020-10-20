@@ -14,6 +14,7 @@ Instructions for building and running:
 ### Rubric Part 2 : Files and class structure.
 
 | Class | Description |
+| -------------- | -------------------------------------------------------------------------------------- |
 | AutoSave | Manages the autosave process. |
 | Constants | Used to store application constants. |
 | ImageBuffer | Stores an RRB image and provides basic RGB read / write operations |
